@@ -1,10 +1,6 @@
 {
-  "redirects": [
-    {
-      "source": "/auth/callback",
-      "destination": "/auth/callback",
-      "permanent": true
-    }
+  "rewrites": [
+    { "source": "/auth/(.*)", "destination": "/auth/$1" }
   ],
   "headers": [
     {
