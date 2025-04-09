@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NIT Silchar Marketplace",
+  title: "NITS BAZAAR",
   description: "Buy, sell, and rent items within the NIT Silchar community",
 };
 

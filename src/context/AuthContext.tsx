@@ -54,9 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Email OTP sign in
   const signIn = async (email: string) => {
-    // Validate NIT Silchar email
+    // Validate Institute email
     if (!email.endsWith('nits.ac.in')) {
-      throw new Error('Please use your NIT Silchar email address');
+      throw new Error('Please use your Institute email address');
     }
 
     // Get the current URL information

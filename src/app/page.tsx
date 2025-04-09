@@ -182,7 +182,7 @@ export default function Home() {
           <div className={styles.gridItem}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h1" color="primary" sx={{ mb: 2 }}>1</Typography>
-              <Typography variant="h6" gutterBottom>Sign Up with NIT Email</Typography>
+              <Typography variant="h6" gutterBottom>Sign Up with Institute Email</Typography>
               <Typography variant="body1">Create an account using your NIT Silchar email address</Typography>
             </Box>
           </div>

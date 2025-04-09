@@ -67,9 +67,47 @@ export default function Navbar() {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        NIT Marketplace
-      </Typography>
+      <Box sx={{ my: 2, display: 'flex', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+              color: 'white',
+              borderRadius: '8px',
+              px: 1.5,
+              py: 0.5,
+              mr: 1,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 800,
+                letterSpacing: '0.5px',
+                textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+              }}
+            >
+              NITS
+            </Typography>
+          </Box>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              color: 'primary.main',
+              letterSpacing: '0.5px',
+            }}
+          >
+            BAZAAR
+          </Typography>
+        </Box>
+      </Box>
       <List>
         {menuItems.map((item) => (
           <ListItem key={item.text} component={Link} href={item.href}>
@@ -104,19 +142,52 @@ export default function Navbar() {
             </IconButton>
           )}
 
-          <Typography
-            variant="h6"
+          <Box
             component={Link}
             href="/"
             sx={{
               flexGrow: 1,
-              fontWeight: 700,
               textDecoration: 'none',
-              color: 'inherit'
+              color: 'inherit',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            NIT Marketplace
-          </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                color: 'white',
+                borderRadius: '8px',
+                px: 1.5,
+                py: 0.5,
+                mr: 1,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 800,
+                  letterSpacing: '0.5px',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                }}
+              >
+                NITS
+              </Typography>
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                color: 'primary.main',
+                letterSpacing: '0.5px',
+              }}
+            >
+              BAZAAR
+            </Typography>
+          </Box>
 
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

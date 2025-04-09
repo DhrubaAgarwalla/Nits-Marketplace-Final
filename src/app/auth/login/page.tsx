@@ -46,11 +46,11 @@ function LoginContent() {
     setMessage(null);
 
     try {
-      // Validate NIT Silchar email
+      // Validate Institute email
       if (!email.endsWith('nits.ac.in')) {
         setMessage({
           type: 'error',
-          text: 'Please use your NIT Silchar email address (ending with nits.ac.in)',
+          text: 'Please use your Institute email address (ending with nits.ac.in)',
         });
         setIsLoading(false);
         return;
@@ -97,7 +97,7 @@ function LoginContent() {
             Sign In
           </Typography>
           <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 4 }}>
-            Use your NIT Silchar email to access the marketplace
+            Use your Institute email to access the marketplace
           </Typography>
 
           {message && (
@@ -109,7 +109,7 @@ function LoginContent() {
           <Box component="form" onSubmit={handleEmailSignIn} sx={{ mb: 3 }}>
             <TextField
               fullWidth
-              label="NIT Silchar Email"
+              label="Institute Email"
               variant="outlined"
               type="email"
               value={email}
@@ -128,7 +128,7 @@ function LoginContent() {
               disabled={isLoading}
               startIcon={isLoading ? <CircularProgress size={24} color="inherit" /> : <EmailIcon />}
             >
-              {isLoading ? 'Sending Link...' : 'Sign in with Email'}
+              {isLoading ? 'Sending Link...' : 'Sign in with Institute Email'}
             </Button>
           </Box>
 
@@ -146,7 +146,7 @@ function LoginContent() {
           </Button>
 
           <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-            * Only emails ending with nits.ac.in are allowed
+            * Only Institute emails ending with nits.ac.in are allowed
           </Typography>
         </Paper>
       </Container>
