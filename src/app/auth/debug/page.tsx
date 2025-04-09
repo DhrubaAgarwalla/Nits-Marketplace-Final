@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { 
-  Container, 
-  Paper, 
-  Typography, 
-  Box, 
-  Button, 
+import {
+  Container,
+  Paper,
+  Typography,
+  Box,
+  Button,
   Divider,
   List,
   ListItem,
@@ -31,7 +31,7 @@ export default function AuthDebugPage() {
       try {
         setLoading(true);
         const { data, error } = await supabase.auth.getSession();
-        
+
         if (error) {
           setError(error.message);
         } else {
@@ -89,16 +89,20 @@ export default function AuthDebugPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Clear any existing sessions to prevent conflicts
       await supabase.auth.signOut({ scope: 'local' });
-      
+
       // Get the current URL information
       const currentUrl = new URL(window.location.href);
-      const redirectUrl = `${currentUrl.origin}/auth/callback`;
-      
+      // Make sure the URL doesn't have a trailing slash to avoid redirect issues
+      const baseUrl = currentUrl.origin.endsWith('/')
+        ? currentUrl.origin.slice(0, -1)
+        : currentUrl.origin;
+      const redirectUrl = `${baseUrl}/auth/callback`;
+
       console.log('Starting Google auth with redirect URL:', redirectUrl);
-      
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -127,13 +131,13 @@ export default function AuthDebugPage() {
           <Typography variant="h4" gutterBottom>
             Authentication Debug
           </Typography>
-          
+
           {loading && (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
               <CircularProgress />
             </Box>
           )}
-          
+
           {error && (
             <Alert severity="error" sx={{ my: 2 }}>
               {error}
@@ -151,10 +155,10 @@ export default function AuthDebugPage() {
                   <Typography variant="body2" sx={{ mt: 1 }}>
                     User: {session.user?.email}
                   </Typography>
-                  <Button 
-                    variant="outlined" 
-                    color="error" 
-                    size="small" 
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
                     onClick={handleSignOut}
                     sx={{ mt: 2 }}
                     disabled={loading}
@@ -171,77 +175,77 @@ export default function AuthDebugPage() {
           </Box>
 
           <Divider sx={{ my: 3 }} />
-          
+
           <Box sx={{ my: 3 }}>
             <Typography variant="h6">Environment Information</Typography>
             <List dense>
               <ListItem>
-                <ListItemText 
-                  primary="Supabase URL" 
-                  secondary={envInfo.supabaseUrl} 
+                <ListItemText
+                  primary="Supabase URL"
+                  secondary={envInfo.supabaseUrl}
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Supabase Anon Key" 
-                  secondary={envInfo.hasAnonKey ? "✅ Set" : "❌ Not set"} 
+                <ListItemText
+                  primary="Supabase Anon Key"
+                  secondary={envInfo.hasAnonKey ? "✅ Set" : "❌ Not set"}
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Node Environment" 
-                  secondary={envInfo.nodeEnv} 
+                <ListItemText
+                  primary="Node Environment"
+                  secondary={envInfo.nodeEnv}
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Vercel Environment" 
-                  secondary={envInfo.vercelEnv} 
+                <ListItemText
+                  primary="Vercel Environment"
+                  secondary={envInfo.vercelEnv}
                 />
               </ListItem>
             </List>
           </Box>
-          
+
           <Divider sx={{ my: 3 }} />
-          
+
           <Box sx={{ my: 3 }}>
             <Typography variant="h6">URL Information</Typography>
             <List dense>
               <ListItem>
-                <ListItemText 
-                  primary="Origin" 
-                  secondary={urlInfo.origin} 
+                <ListItemText
+                  primary="Origin"
+                  secondary={urlInfo.origin}
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Hostname" 
-                  secondary={urlInfo.hostname} 
+                <ListItemText
+                  primary="Hostname"
+                  secondary={urlInfo.hostname}
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Is Localhost" 
-                  secondary={urlInfo.isLocalhost ? "Yes" : "No"} 
+                <ListItemText
+                  primary="Is Localhost"
+                  secondary={urlInfo.isLocalhost ? "Yes" : "No"}
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Callback URL" 
-                  secondary={urlInfo.callbackUrl} 
+                <ListItemText
+                  primary="Callback URL"
+                  secondary={urlInfo.callbackUrl}
                 />
               </ListItem>
             </List>
           </Box>
-          
+
           <Divider sx={{ my: 3 }} />
-          
+
           <Box sx={{ my: 3 }}>
             <Typography variant="h6">Authentication Tests</Typography>
             <Box sx={{ mt: 2 }}>
-              <Button 
-                variant="contained" 
-                color="primary" 
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={handleTestGoogleAuth}
                 disabled={loading}
                 fullWidth
@@ -253,7 +257,7 @@ export default function AuthDebugPage() {
               </Typography>
             </Box>
           </Box>
-          
+
           <Alert severity="info" sx={{ mt: 4 }}>
             <Typography variant="body2">
               If you're experiencing authentication issues, make sure:

@@ -72,7 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Using localhost redirect URL:', redirectUrl);
     } else {
       // For production, use the current origin
-      redirectUrl = `${currentUrl.origin}/auth/callback`;
+      // Make sure the URL doesn't have a trailing slash to avoid redirect issues
+      const baseUrl = currentUrl.origin.endsWith('/')
+        ? currentUrl.origin.slice(0, -1)
+        : currentUrl.origin;
+      redirectUrl = `${baseUrl}/auth/callback`;
       console.log('Using production redirect URL:', redirectUrl);
     }
 
@@ -107,7 +111,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('Using localhost redirect URL:', redirectUrl);
       } else {
         // For production, use the current origin
-        redirectUrl = `${currentUrl.origin}/auth/callback`;
+        // Make sure the URL doesn't have a trailing slash to avoid redirect issues
+        const baseUrl = currentUrl.origin.endsWith('/')
+          ? currentUrl.origin.slice(0, -1)
+          : currentUrl.origin;
+        redirectUrl = `${baseUrl}/auth/callback`;
         console.log('Using production redirect URL:', redirectUrl);
       }
 

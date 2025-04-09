@@ -20,10 +20,29 @@ function CallbackHandler() {
   useEffect(() => {
     const processCode = async () => {
       try {
-        // Get the code from the URL
-        const code = searchParams.get('code');
-        const errorParam = searchParams.get('error');
-        const errorDescription = searchParams.get('error_description');
+        // Log the full URL for debugging
+        console.log('Full callback URL:', window.location.href);
+
+        // Check if we have a hash fragment that might contain the code
+        const hashParams = new URLSearchParams(
+          window.location.hash ? window.location.hash.substring(1) : ''
+        );
+
+        // Try to get code from query params first, then from hash if not found
+        let code = searchParams.get('code');
+        let errorParam = searchParams.get('error');
+        let errorDescription = searchParams.get('error_description');
+
+        // If not in query params, try the hash fragment
+        if (!code && hashParams.has('code')) {
+          code = hashParams.get('code');
+          console.log('Found code in hash fragment');
+        }
+
+        if (!errorParam && hashParams.has('error')) {
+          errorParam = hashParams.get('error');
+          errorDescription = hashParams.get('error_description');
+        }
 
         // Check for error parameters first
         if (errorParam) {
@@ -36,7 +55,7 @@ function CallbackHandler() {
 
         // If there's no code, show an error
         if (!code) {
-          setError('No authentication code provided');
+          setError('No authentication code provided. Check URL format.');
           setLoading(false);
           return;
         }
