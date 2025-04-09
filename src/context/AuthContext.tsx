@@ -59,11 +59,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Please use your NIT Silchar email address');
     }
 
-    // Get the origin for the redirect URL
-    const origin = window.location.origin;
+    // Get the current URL information
+    const currentUrl = new URL(window.location.href);
+    const isLocalhost = currentUrl.hostname === 'localhost';
 
-    // Simple redirect URL - always use the current origin
-    const redirectUrl = `${origin}/auth/callback`;
+    // Determine the correct redirect URL
+    let redirectUrl;
+
+    if (isLocalhost) {
+      // For local development, use localhost
+      redirectUrl = 'http://localhost:3000/auth/callback';
+      console.log('Using localhost redirect URL:', redirectUrl);
+    } else {
+      // For production, use the current origin
+      redirectUrl = `${currentUrl.origin}/auth/callback`;
+      console.log('Using production redirect URL:', redirectUrl);
+    }
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -80,13 +91,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Google sign in
   const signInWithGoogle = async () => {
     try {
-      // Get the origin for the redirect URL
-      const origin = window.location.origin;
+      // Get the current URL information
+      const currentUrl = new URL(window.location.href);
+      const isLocalhost = currentUrl.hostname === 'localhost';
 
-      // Simple redirect URL - always use the current origin
-      const redirectUrl = `${origin}/auth/callback`;
+      // Determine the correct redirect URL
+      let redirectUrl;
 
-      console.log('Using redirect URL:', redirectUrl);
+      if (isLocalhost) {
+        // For local development, use localhost
+        redirectUrl = 'http://localhost:3000/auth/callback';
+        console.log('Using localhost redirect URL:', redirectUrl);
+      } else {
+        // For production, use the current origin
+        redirectUrl = `${currentUrl.origin}/auth/callback`;
+        console.log('Using production redirect URL:', redirectUrl);
+      }
 
       // First, attempt to sign in with Google
       const { error } = await supabase.auth.signInWithOAuth({
