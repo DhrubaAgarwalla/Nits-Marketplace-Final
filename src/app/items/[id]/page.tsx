@@ -165,6 +165,7 @@ export default function ItemDetailPage() {
                     src={selectedImage}
                     alt={item.title}
                     fill
+                    unoptimized
                     style={{ objectFit: 'contain' }}
                   />
                 ) : (
@@ -210,6 +211,7 @@ export default function ItemDetailPage() {
                         src={img}
                         alt={`${item.title} - image ${index + 1}`}
                         fill
+                        unoptimized
                         style={{ objectFit: 'cover' }}
                       />
                     </Box>
@@ -292,6 +294,11 @@ export default function ItemDetailPage() {
                       <Typography variant="body2" color="text.secondary">
                         {item.user?.department || 'Department not specified'}
                       </Typography>
+                      {item.user?.scholarId && (
+                        <Typography variant="body2" color="text.secondary">
+                          Scholar ID: {item.user.scholarId}
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                 </CardContent>

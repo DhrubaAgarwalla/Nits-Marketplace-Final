@@ -15,7 +15,7 @@ export async function getItems(options?: {
     .from('items')
     .select(`
       *,
-      user:users(id, email, full_name, department, whatsapp_number)
+      user:users(id, email, full_name, department, whatsapp_number, scholar_id)
     `)
     .order('created_at', { ascending: false });
 
@@ -66,6 +66,7 @@ export async function getItems(options?: {
     user: item.user ? {
       ...item.user,
       fullName: item.user.full_name,
+      scholarId: item.user.scholar_id || '',
       whatsappNumber: item.user.whatsapp_number
     } : undefined
   })) as Item[];
@@ -77,7 +78,7 @@ export async function getItemById(id: string) {
     .from('items')
     .select(`
       *,
-      user:users(id, email, full_name, department, whatsapp_number)
+      user:users(id, email, full_name, department, whatsapp_number, scholar_id)
     `)
     .eq('id', id)
     .single();
@@ -98,6 +99,7 @@ export async function getItemById(id: string) {
       user: data.user ? {
         ...data.user,
         fullName: data.user.full_name,
+        scholarId: data.user.scholar_id || '',
         whatsappNumber: data.user.whatsapp_number
       } : undefined
     } as Item;
