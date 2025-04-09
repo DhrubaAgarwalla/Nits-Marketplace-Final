@@ -23,13 +23,8 @@ export async function middleware(req: NextRequest) {
       await supabase.auth.signOut();
 
       // Redirect to the login page with an error message
-      const url = req.nextUrl.clone();
-
-      // Get the site URL from environment or use the request origin
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
-
-      // Set the full URL for the redirect
-      url.pathname = '/auth/login';
+      // Always use the Vercel URL for production
+      const url = new URL('/auth/login', 'https://nits-marketplace-final.vercel.app');
       url.searchParams.set('error', 'Only NIT Silchar email addresses (.nits.ac.in) are allowed to use this platform.');
 
       return NextResponse.redirect(url);

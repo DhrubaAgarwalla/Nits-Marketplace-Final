@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
+        emailRedirectTo: 'https://nits-marketplace-final.vercel.app/auth/callback',
       },
     });
 
@@ -74,16 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Google sign in
   const signInWithGoogle = async () => {
     try {
-      // Determine the correct redirect URL
-      // For Vercel, use the NEXT_PUBLIC_SITE_URL environment variable
-      // For local development, use window.location.origin
-      const isVercel = typeof window !== 'undefined' &&
-                      window.location.hostname.includes('vercel.app');
-
-      // Force the Vercel URL if we're on Vercel
-      const redirectUrl = isVercel
-        ? 'https://nits-marketplace-final.vercel.app/auth/callback'
-        : `${window.location.origin}/auth/callback`;
+      // Always use the Vercel URL for production
+      const redirectUrl = 'https://nits-marketplace-final.vercel.app/auth/callback';
 
       console.log('Using redirect URL:', redirectUrl);
 
