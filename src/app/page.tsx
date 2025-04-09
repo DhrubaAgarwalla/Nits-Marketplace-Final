@@ -1,7 +1,7 @@
 'use client';
 
 import MainLayout from '@/components/MainLayout';
-import { Box, Typography, Button, Grid, Card, CardContent, Container } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, Container } from '@mui/material';
 import { ItemCategory } from '@/types';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -38,33 +38,36 @@ export default function Home() {
         {/* Background image */}
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
           <Image
-            src="/header.jpg"
+            src="/header3 (1).jpeg"
             alt="NIT Silchar Campus"
             fill
             style={{
               objectFit: 'cover',
-              objectPosition: 'center',
-              filter: 'brightness(1.1) contrast(1.1)'
+              objectPosition: 'center 40%', /* Adjust vertical position to crop appropriately */
+              filter: 'brightness(1.05) contrast(1.05)',
+              opacity: 1
             }}
             priority
             quality={100}
           />
         </div>
-        {/* Overlay */}
-        <div className={styles.heroOverlay} />
+        {/* Overlay removed for better image visibility */}
         <Container maxWidth="md" className={styles.heroContent}>
           <Typography
             variant="h2"
             component="h1"
             gutterBottom
             fontWeight="bold"
+            className={styles.heroTitle}
             sx={{
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               letterSpacing: '0.02em',
               mb: 2
             }}
           >
-            NIT Silchar Marketplace
+            <span className={styles.animatedText} style={{ animationDelay: '0.1s' }}>NIT</span>{' '}
+            <span className={styles.animatedText} style={{ animationDelay: '0.3s' }}>Silchar</span>{' '}
+            <span className={styles.animatedText} style={{ animationDelay: '0.5s' }}>Marketplace</span>
           </Typography>
           <Typography
             variant="h5"
@@ -75,10 +78,13 @@ export default function Home() {
               fontSize: { xs: '1.2rem', md: '1.5rem' },
               maxWidth: '800px',
               mx: 'auto',
-              lineHeight: 1.4
+              lineHeight: 1.4,
+              overflow: 'hidden'
             }}
           >
-            Buy, sell, and rent items within the NIT Silchar community
+            <span className={styles.animatedText} style={{ animationDelay: '0.7s' }}>
+              Buy, sell, and rent items within the NIT Silchar community
+            </span>
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, flexWrap: 'wrap' }}>
             <Button
@@ -87,6 +93,8 @@ export default function Home() {
               size="large"
               component={Link}
               href="/browse"
+              className={styles.animatedButton}
+              style={{ animationDelay: '0.9s' }}
               sx={{
                 px: 4,
                 py: 1.5,
@@ -107,6 +115,8 @@ export default function Home() {
               size="large"
               component={Link}
               href="/create-listing"
+              className={styles.animatedButton}
+              style={{ animationDelay: '1.1s' }}
               sx={{
                 px: 4,
                 py: 1.5,
