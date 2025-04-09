@@ -257,7 +257,7 @@ export default function CreateListingPage() {
         return (
           <Box sx={{ mt: 3 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={8}>
                 <FormControl fullWidth required>
                   <InputLabel>Listing Type</InputLabel>
                   <Select
@@ -265,6 +265,15 @@ export default function CreateListingPage() {
                     onChange={(e) => setListingType(e.target.value as ListingType)}
                     label="Listing Type"
                     disabled={loading || success}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 300,
+                          width: 'auto',
+                          minWidth: '100%'
+                        },
+                      },
+                    }}
                   >
                     <MenuItem value={ListingType.SELL}>I want to sell</MenuItem>
                     <MenuItem value={ListingType.BUY}>I want to buy</MenuItem>
@@ -273,7 +282,7 @@ export default function CreateListingPage() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
                   label="Price"
@@ -289,7 +298,7 @@ export default function CreateListingPage() {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={8}>
                 <FormControl fullWidth required>
                   <InputLabel>Category</InputLabel>
                   <Select
@@ -297,6 +306,15 @@ export default function CreateListingPage() {
                     onChange={(e) => setCategory(e.target.value as ItemCategory)}
                     label="Category"
                     disabled={loading || success}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 300,
+                          width: 'auto',
+                          minWidth: '100%'
+                        },
+                      },
+                    }}
                   >
                     {Object.values(ItemCategory).map((cat) => (
                       <MenuItem key={cat} value={cat}>
@@ -307,7 +325,7 @@ export default function CreateListingPage() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
                   label="Condition"
