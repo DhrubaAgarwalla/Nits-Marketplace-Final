@@ -59,10 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Please use your NIT Silchar email address');
     }
 
+    // Determine if we're on Vercel or localhost
+    const isVercel = typeof window !== 'undefined' &&
+                    window.location.hostname.includes('vercel.app');
+
+    // Use Vercel URL for production, window.location.origin for local development
+    const redirectUrl = isVercel
+      ? 'https://nits-marketplace-final.vercel.app/auth/callback'
+      : `${window.location.origin}/auth/callback`;
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: 'https://nits-marketplace-final.vercel.app/auth/callback',
+        emailRedirectTo: redirectUrl,
       },
     });
 
@@ -74,8 +83,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Google sign in
   const signInWithGoogle = async () => {
     try {
-      // Always use the Vercel URL for production
-      const redirectUrl = 'https://nits-marketplace-final.vercel.app/auth/callback';
+      // Determine if we're on Vercel or localhost
+      const isVercel = typeof window !== 'undefined' &&
+                      window.location.hostname.includes('vercel.app');
+
+      // Use Vercel URL for production, window.location.origin for local development
+      const redirectUrl = isVercel
+        ? 'https://nits-marketplace-final.vercel.app/auth/callback'
+        : `${window.location.origin}/auth/callback`;
 
       console.log('Using redirect URL:', redirectUrl);
 
