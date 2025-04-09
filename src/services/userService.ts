@@ -22,6 +22,7 @@ export async function getUserById(id: string) {
   return {
     ...data,
     fullName: data.full_name,
+    scholarId: data.scholar_id,
     whatsappNumber: data.whatsapp_number,
     createdAt: data.created_at,
     updatedAt: data.updated_at
@@ -38,6 +39,7 @@ export async function upsertUser(user: Partial<User> & { id: string }) {
   if (user.email !== undefined) dbUser.email = user.email;
   if (user.fullName !== undefined) dbUser.full_name = user.fullName;
   if (user.department !== undefined) dbUser.department = user.department;
+  if (user.scholarId !== undefined) dbUser.scholar_id = user.scholarId;
   if (user.whatsappNumber !== undefined) dbUser.whatsapp_number = user.whatsappNumber;
 
   console.log('Upserting user with data:', JSON.stringify(dbUser, null, 2));
@@ -60,6 +62,7 @@ export async function upsertUser(user: Partial<User> & { id: string }) {
   return {
     ...data[0],
     fullName: data[0].full_name,
+    scholarId: data[0].scholar_id,
     whatsappNumber: data[0].whatsapp_number,
     createdAt: data[0].created_at,
     updatedAt: data[0].updated_at
@@ -73,6 +76,7 @@ export async function updateUser(id: string, updates: Partial<Omit<User, 'id' | 
 
   if (updates.fullName !== undefined) dbUpdates.full_name = updates.fullName;
   if (updates.department !== undefined) dbUpdates.department = updates.department;
+  if (updates.scholarId !== undefined) dbUpdates.scholar_id = updates.scholarId;
   if (updates.whatsappNumber !== undefined) dbUpdates.whatsapp_number = updates.whatsappNumber;
   if (updates.email !== undefined) dbUpdates.email = updates.email;
 
@@ -97,6 +101,7 @@ export async function updateUser(id: string, updates: Partial<Omit<User, 'id' | 
   return {
     ...data[0],
     fullName: data[0].full_name,
+    scholarId: data[0].scholar_id,
     whatsappNumber: data[0].whatsapp_number,
     createdAt: data[0].created_at,
     updatedAt: data[0].updated_at

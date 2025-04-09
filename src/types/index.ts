@@ -4,6 +4,7 @@ export interface User {
   email: string;
   fullName: string;
   department: string;
+  scholarId?: string;
   whatsappNumber?: string;
   createdAt: string;
   updatedAt: string;

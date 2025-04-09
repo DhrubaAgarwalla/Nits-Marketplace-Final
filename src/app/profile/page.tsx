@@ -36,6 +36,7 @@ export default function ProfilePage() {
   // Form state
   const [fullName, setFullName] = useState('');
   const [department, setDepartment] = useState('');
+  const [scholarId, setScholarId] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
@@ -61,6 +62,7 @@ export default function ProfilePage() {
         // Set form values
         setFullName(userData.fullName || '');
         setDepartment(userData.department || '');
+        setScholarId(userData.scholarId || '');
         setWhatsappNumber(userData.whatsappNumber || '');
       } catch (err) {
         console.error('Error fetching user data:', err);
@@ -86,6 +88,7 @@ export default function ProfilePage() {
       const updatedUser = await updateUser(authUser.id, {
         fullName,
         department,
+        scholarId,
         whatsappNumber,
       });
 
@@ -255,6 +258,22 @@ export default function ProfilePage() {
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
                       sx={{
+                        mb: 2,
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        }
+                      }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      label="Scholar ID"
+                      variant="outlined"
+                      value={scholarId}
+                      onChange={(e) => setScholarId(e.target.value)}
+                      placeholder="e.g., 2101234"
+                      helperText="Your NIT Silchar Scholar ID"
+                      sx={{
                         mb: 0,
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
@@ -359,6 +378,41 @@ export default function ProfilePage() {
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
                         {user.department || 'Not specified'}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(25, 118, 210, 0.05)',
+                  }}>
+                    <Box sx={{
+                      bgcolor: 'info.main',
+                      color: 'white',
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mr: 2,
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                    }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                      </svg>
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Scholar ID
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {user.scholarId || 'Not provided'}
                       </Typography>
                     </Box>
                   </Box>
