@@ -22,7 +22,7 @@ export async function getUserById(id: string) {
   return {
     ...data,
     fullName: data.full_name,
-    scholarId: data.scholar_id,
+    scholarId: data.scholar_id || '',
     whatsappNumber: data.whatsapp_number,
     createdAt: data.created_at,
     updatedAt: data.updated_at
@@ -62,7 +62,7 @@ export async function upsertUser(user: Partial<User> & { id: string }) {
   return {
     ...data[0],
     fullName: data[0].full_name,
-    scholarId: data[0].scholar_id,
+    scholarId: data[0].scholar_id || '',
     whatsappNumber: data[0].whatsapp_number,
     createdAt: data[0].created_at,
     updatedAt: data[0].updated_at
@@ -101,7 +101,7 @@ export async function updateUser(id: string, updates: Partial<Omit<User, 'id' | 
   return {
     ...data[0],
     fullName: data[0].full_name,
-    scholarId: data[0].scholar_id,
+    scholarId: data[0].scholar_id || '',
     whatsappNumber: data[0].whatsapp_number,
     createdAt: data[0].created_at,
     updatedAt: data[0].updated_at
