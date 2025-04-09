@@ -37,8 +37,8 @@ export async function middleware(req: NextRequest) {
   if (session?.user) {
     const email = session.user.email;
 
-    // If the email doesn't end with nits.ac.in, sign them out
-    if (!email || !email.endsWith('nits.ac.in')) {
+    // If the email doesn't end with nits.ac.in or a subdomain of nits.ac.in, sign them out
+    if (!email || (!email.endsWith('nits.ac.in') && !email.includes('@') || !email.split('@')[1].endsWith('nits.ac.in'))) {
       console.log('Non-NIT Silchar email detected in middleware:', email);
 
       // Sign the user out
@@ -46,7 +46,7 @@ export async function middleware(req: NextRequest) {
 
       // Redirect to the login page with an error message
       const url = new URL('/auth/login', req.nextUrl.origin);
-      url.searchParams.set('error', 'Only NIT Silchar email addresses (.nits.ac.in) are allowed to use this platform.');
+      url.searchParams.set('error', 'Only NIT Silchar email addresses (nits.ac.in or any subdomain) are allowed to use this platform.');
 
       return NextResponse.redirect(url);
     }

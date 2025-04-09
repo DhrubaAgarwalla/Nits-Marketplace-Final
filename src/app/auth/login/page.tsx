@@ -46,11 +46,11 @@ function LoginContent() {
     setMessage(null);
 
     try {
-      // Validate Institute email
-      if (!email.endsWith('nits.ac.in')) {
+      // Validate Institute email - accept both nits.ac.in and any subdomain of nits.ac.in
+      if (!email.endsWith('nits.ac.in') && !email.includes('@') || !email.split('@')[1].endsWith('nits.ac.in')) {
         setMessage({
           type: 'error',
-          text: 'Please use your Institute email address (ending with nits.ac.in)',
+          text: 'Please use your Institute email address (ending with nits.ac.in or any subdomain)',
         });
         setIsLoading(false);
         return;
@@ -146,7 +146,7 @@ function LoginContent() {
           </Button>
 
           <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-            * Only Institute emails ending with nits.ac.in are allowed
+            * Only Institute emails ending with nits.ac.in or any subdomain (e.g., civil.nits.ac.in) are allowed
           </Typography>
         </Paper>
       </Container>

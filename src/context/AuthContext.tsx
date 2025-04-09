@@ -54,8 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Email OTP sign in
   const signIn = async (email: string) => {
-    // Validate Institute email
-    if (!email.endsWith('nits.ac.in')) {
+    // Validate Institute email - accept both nits.ac.in and any subdomain of nits.ac.in
+    if (!email.endsWith('nits.ac.in') && !email.includes('@') || !email.split('@')[1].endsWith('nits.ac.in')) {
       throw new Error('Please use your Institute email address');
     }
 
@@ -138,13 +138,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (event === 'SIGNED_IN' && session?.user) {
           const email = session.user.email;
 
-          // Validate that the email is from NIT Silchar
-          if (!email || !email.endsWith('nits.ac.in')) {
+          // Validate that the email is from NIT Silchar (including subdomains)
+          if (!email || (!email.endsWith('nits.ac.in') && !email.includes('@') || !email.split('@')[1].endsWith('nits.ac.in'))) {
             console.error('Non-NIT Silchar email detected:', email);
             // Sign out the user immediately
             await supabase.auth.signOut();
             // Show error message
-            alert('Only NIT Silchar email addresses (.nits.ac.in) are allowed to use this platform.');
+            alert('Only NIT Silchar email addresses (nits.ac.in or any subdomain) are allowed to use this platform.');
           }
         }
 
