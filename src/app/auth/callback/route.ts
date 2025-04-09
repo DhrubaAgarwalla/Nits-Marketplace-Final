@@ -6,6 +6,14 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
+  // Check if we already have an access_token in the URL
+  // If so, we're in a redirect loop and need to break it
+  if (requestUrl.toString().includes('access_token=')) {
+    console.log('Detected access_token in URL, breaking potential redirect loop');
+    // Redirect to home page without any parameters to break the loop
+    return NextResponse.redirect(new URL('/', requestUrl.origin));
+  }
+
   // Determine if we're on Vercel or localhost
   const isVercel = requestUrl.hostname.includes('vercel.app');
 
@@ -32,7 +40,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Redirect to the appropriate URL based on environment
-  const redirectUrl = `${siteUrl}/`;
+  // Make sure to use a clean URL without any parameters
+  const redirectUrl = new URL('/', siteUrl).toString();
   console.log('Redirecting to:', redirectUrl);
 
   return NextResponse.redirect(redirectUrl);
