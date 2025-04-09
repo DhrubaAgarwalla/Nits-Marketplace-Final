@@ -33,6 +33,9 @@ function CallbackHandler() {
         // Log the code for debugging
         console.log('Processing authentication code');
 
+        // Clear any existing sessions to prevent conflicts
+        await supabase.auth.signOut({ scope: 'local' });
+
         // Exchange the code for a session
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
@@ -48,10 +51,10 @@ function CallbackHandler() {
         setSuccess(true);
         setLoading(false);
 
-        // Automatically redirect after 3 seconds
+        // Use window.location instead of router to avoid potential redirect issues
         setTimeout(() => {
-          router.push('/');
-        }, 3000);
+          window.location.href = '/';
+        }, 2000);
       } catch (err: any) {
         console.error('Unexpected error in auth callback:', err);
         setError(err.message || 'An unexpected error occurred');
@@ -59,8 +62,11 @@ function CallbackHandler() {
       }
     };
 
-    processCode();
-  }, [searchParams, router, supabase.auth]);
+    // Only process the code if we're loading
+    if (loading) {
+      processCode();
+    }
+  }, [searchParams, loading, supabase.auth]);
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>

@@ -76,6 +76,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Using production redirect URL:', redirectUrl);
     }
 
+    // Clear any existing sessions to prevent conflicts
+    await supabase.auth.signOut({ scope: 'local' });
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -107,6 +110,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         redirectUrl = `${currentUrl.origin}/auth/callback`;
         console.log('Using production redirect URL:', redirectUrl);
       }
+
+      // Clear any existing sessions to prevent conflicts
+      await supabase.auth.signOut({ scope: 'local' });
 
       // First, attempt to sign in with Google
       const { error } = await supabase.auth.signInWithOAuth({
