@@ -208,12 +208,22 @@ export default function Home() {
         sx={{
           p: 6,
           borderRadius: 4,
-          bgcolor: 'secondary.light',
+          bgcolor: 'primary.main',
           textAlign: 'center',
           mb: 4,
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
         }}
       >
-        <Typography variant="h4" gutterBottom color="white">
+        <Typography
+          variant="h4"
+          gutterBottom
+          color="white"
+          sx={{
+            fontWeight: 'bold',
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+          }}
+        >
           Ready to buy or sell on campus?
         </Typography>
         <Typography variant="body1" sx={{ mb: 4 }} color="white">
@@ -224,7 +234,19 @@ export default function Home() {
           size="large"
           component={Link}
           href="/auth/login"
-          sx={{ px: 4, py: 1.5, bgcolor: 'white', color: 'secondary.main' }}
+          sx={{
+            px: 4,
+            py: 1.5,
+            bgcolor: 'white',
+            color: 'primary.dark',
+            fontWeight: 'bold',
+            '&:hover': {
+              bgcolor: '#f0f0f0',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)'
+            },
+            transition: 'all 0.2s ease-in-out'
+          }}
         >
           Get Started
         </Button>
