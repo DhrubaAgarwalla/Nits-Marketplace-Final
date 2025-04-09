@@ -17,12 +17,25 @@ import {
   InputAdornment,
   CircularProgress,
   Alert,
-  IconButton
+  IconButton,
+  Stepper,
+  Step,
+  StepLabel,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Tooltip,
+  useTheme
 } from '@mui/material';
 import {
   CloudUpload as UploadIcon,
   Delete as DeleteIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  Info as InfoIcon,
+  WhatsApp as WhatsAppIcon,
+  PhotoCamera as CameraIcon,
+  Category as CategoryIcon
 } from '@mui/icons-material';
 import MainLayout from '@/components/MainLayout';
 import { useAuth } from '@/context/AuthContext';
@@ -32,6 +45,7 @@ import { ItemCategory, ListingType } from '@/types';
 export default function CreateListingPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const theme = useTheme();
 
   // Form state
   const [title, setTitle] = useState('');
@@ -50,6 +64,34 @@ export default function CreateListingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  // Step state for multi-step form
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = ['Basic Info', 'Details', 'Images', 'Review'];
+
+  // Handle next step
+  const handleNext = () => {
+    // Validate current step
+    if (activeStep === 0) {
+      if (!title || !description) {
+        setError('Please fill in all required fields in this step');
+        return;
+      }
+    } else if (activeStep === 1) {
+      if (!price || !category || !listingType) {
+        setError('Please fill in all required fields in this step');
+        return;
+      }
+    }
+
+    setError(null);
+    setActiveStep((prevStep) => prevStep + 1);
+  };
+
+  // Handle back step
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
 
   // Handle image selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,6 +214,312 @@ export default function CreateListingPage() {
     }
   };
 
+  // Render the appropriate step content
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case 0: // Basic Info
+        return (
+          <Box sx={{ mt: 3 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Title"
+                  variant="outlined"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  disabled={loading || success}
+                  placeholder="What are you selling/renting?"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  variant="outlined"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  multiline
+                  rows={4}
+                  required
+                  disabled={loading || success}
+                  placeholder="Provide details about your item..."
+                  helperText="Be specific about the condition, features, and why someone would want it"
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        );
+
+      case 1: // Details
+        return (
+          <Box sx={{ mt: 3 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Listing Type</InputLabel>
+                  <Select
+                    value={listingType}
+                    onChange={(e) => setListingType(e.target.value as ListingType)}
+                    label="Listing Type"
+                    disabled={loading || success}
+                  >
+                    <MenuItem value={ListingType.SELL}>I want to sell</MenuItem>
+                    <MenuItem value={ListingType.BUY}>I want to buy</MenuItem>
+                    <MenuItem value={ListingType.RENT}>I want to rent out</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Price"
+                  variant="outlined"
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                  }}
+                  required
+                  disabled={loading || success}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value as ItemCategory)}
+                    label="Category"
+                    disabled={loading || success}
+                  >
+                    {Object.values(ItemCategory).map((cat) => (
+                      <MenuItem key={cat} value={cat}>
+                        {cat}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Condition"
+                  variant="outlined"
+                  value={condition}
+                  onChange={(e) => setCondition(e.target.value)}
+                  placeholder="e.g., New, Used, Good condition"
+                  disabled={loading || success}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="WhatsApp Number"
+                  variant="outlined"
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  placeholder="e.g., 919876543210 (with country code)"
+                  helperText="This will be used for buyers to contact you directly"
+                  disabled={loading || success}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <WhatsAppIcon color="success" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        );
+
+      case 2: // Images
+        return (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Upload Images (max 5)
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Good quality images increase your chances of selling quickly
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 3 }}>
+              {previewUrls.map((url, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    position: 'relative',
+                    width: 150,
+                    height: 150,
+                    border: '1px solid',
+                    borderColor: 'grey.300',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: 1,
+                  }}
+                >
+                  <img
+                    src={url}
+                    alt={`Preview ${index}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: 5,
+                      right: 5,
+                      bgcolor: 'rgba(255, 255, 255, 0.8)',
+                      '&:hover': {
+                        bgcolor: 'rgba(255, 0, 0, 0.1)',
+                      },
+                    }}
+                    onClick={() => handleRemoveImage(index)}
+                    disabled={loading || success}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
+
+              {previewUrls.length < 5 && (
+                <Button
+                  component="label"
+                  variant="outlined"
+                  startIcon={<CameraIcon />}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 2,
+                    borderStyle: 'dashed',
+                  }}
+                  disabled={loading || success}
+                >
+                  Add Image
+                  <Typography variant="caption" sx={{ mt: 1 }}>
+                    Click to browse
+                  </Typography>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleImageSelect}
+                    multiple
+                  />
+                </Button>
+              )}
+            </Box>
+
+            {previewUrls.length === 0 && (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                You can add up to 5 images of your item
+              </Alert>
+            )}
+          </Box>
+        );
+
+      case 3: // Review
+        return (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Review Your Listing
+            </Typography>
+
+            <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant="h5">{title}</Typography>
+                  <Chip
+                    label={listingType}
+                    color={listingType === ListingType.SELL ? 'primary' : listingType === ListingType.RENT ? 'secondary' : 'default'}
+                    size="small"
+                    sx={{ mt: 1, mr: 1 }}
+                  />
+                  <Chip
+                    label={category}
+                    variant="outlined"
+                    size="small"
+                    sx={{ mt: 1 }}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
+                    ₹{price}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                    {description}
+                  </Typography>
+                </Grid>
+
+                {condition && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2">Condition:</Typography>
+                    <Typography variant="body2">{condition}</Typography>
+                  </Grid>
+                )}
+
+                {whatsappNumber && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2">Contact:</Typography>
+                    <Typography variant="body2">
+                      <WhatsAppIcon fontSize="small" color="success" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                      {whatsappNumber}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {previewUrls.length > 0 && (
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle2" sx={{ mt: 1 }}>Images:</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                      {previewUrls.map((url, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: 1,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <img
+                            src={url}
+                            alt={`Preview ${index}`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  </Grid>
+                )}
+              </Grid>
+            </Paper>
+          </Box>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <MainLayout>
       <Container maxWidth="md">
@@ -199,200 +547,49 @@ export default function CreateListingPage() {
             </Alert>
           )}
 
+          {/* Stepper */}
+          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+
+          {/* Step content */}
           <Box component="form" onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-              {/* Title */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Title"
-                  variant="outlined"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  disabled={loading || success}
-                />
-              </Grid>
+            {renderStepContent()}
 
-              {/* Description */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Description"
-                  variant="outlined"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  multiline
-                  rows={4}
-                  required
-                  disabled={loading || success}
-                />
-              </Grid>
+            {/* Navigation buttons */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+              <Button
+                variant="outlined"
+                onClick={handleBack}
+                disabled={activeStep === 0 || loading || success}
+              >
+                Back
+              </Button>
 
-              {/* Price */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Price"
-                  variant="outlined"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-                  }}
-                  required
-                  disabled={loading || success}
-                />
-              </Grid>
-
-              {/* Category */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth required>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value as ItemCategory)}
-                    label="Category"
-                    disabled={loading || success}
-                  >
-                    {Object.values(ItemCategory).map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              {/* Listing Type */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth required>
-                  <InputLabel>Listing Type</InputLabel>
-                  <Select
-                    value={listingType}
-                    onChange={(e) => setListingType(e.target.value as ListingType)}
-                    label="Listing Type"
-                    disabled={loading || success}
-                  >
-                    <MenuItem value={ListingType.SELL}>I want to sell</MenuItem>
-                    <MenuItem value={ListingType.BUY}>I want to buy</MenuItem>
-                    <MenuItem value={ListingType.RENT}>I want to rent out</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              {/* Condition */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Condition (optional)"
-                  variant="outlined"
-                  value={condition}
-                  onChange={(e) => setCondition(e.target.value)}
-                  placeholder="e.g., New, Used, Good condition"
-                  disabled={loading || success}
-                />
-              </Grid>
-
-              {/* WhatsApp Number */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="WhatsApp Number (for contact)"
-                  variant="outlined"
-                  value={whatsappNumber}
-                  onChange={(e) => setWhatsappNumber(e.target.value)}
-                  placeholder="e.g., 919876543210 (with country code)"
-                  helperText="This will be used for buyers to contact you directly"
-                  disabled={loading || success}
-                />
-              </Grid>
-
-              {/* Image Upload */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Upload Images (max 5)
-                </Typography>
-
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-                  {previewUrls.map((url, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        position: 'relative',
-                        width: 100,
-                        height: 100,
-                        border: '1px solid',
-                        borderColor: 'grey.300',
-                        borderRadius: 1,
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <img
-                        src={url}
-                        alt={`Preview ${index}`}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <IconButton
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          right: 0,
-                          bgcolor: 'rgba(255, 255, 255, 0.7)',
-                        }}
-                        onClick={() => handleRemoveImage(index)}
-                        disabled={loading || success}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  ))}
-
-                  {previewUrls.length < 5 && (
-                    <Button
-                      component="label"
-                      variant="outlined"
-                      startIcon={<AddIcon />}
-                      sx={{
-                        width: 100,
-                        height: 100,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                      disabled={loading || success}
-                    >
-                      Add Image
-                      <input
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        onChange={handleImageSelect}
-                        multiple
-                      />
-                    </Button>
-                  )}
-                </Box>
-              </Grid>
-
-              {/* Submit Button */}
-              <Grid item xs={12}>
+              {activeStep === steps.length - 1 ? (
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
-                  size="large"
-                  fullWidth
                   startIcon={loading ? <CircularProgress size={24} color="inherit" /> : <UploadIcon />}
                   disabled={loading || success || !user}
                 >
                   {loading ? 'Creating Listing...' : 'Create Listing'}
                 </Button>
-              </Grid>
-            </Grid>
+              ) : (
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  disabled={loading || success}
+                >
+                  Next
+                </Button>
+              )}
+            </Box>
           </Box>
         </Paper>
       </Container>
