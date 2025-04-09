@@ -22,6 +22,17 @@ function CallbackHandler() {
       try {
         // Get the code from the URL
         const code = searchParams.get('code');
+        const errorParam = searchParams.get('error');
+        const errorDescription = searchParams.get('error_description');
+
+        // Check for error parameters first
+        if (errorParam) {
+          const errorMessage = errorDescription || `Authentication error: ${errorParam}`;
+          console.error('Error in auth callback URL:', errorMessage);
+          setError(errorMessage);
+          setLoading(false);
+          return;
+        }
 
         // If there's no code, show an error
         if (!code) {
@@ -30,34 +41,49 @@ function CallbackHandler() {
           return;
         }
 
-        // Log the code for debugging
+        // Log debugging information
+        console.log('Auth callback processing started');
+        console.log('Current URL:', window.location.href);
         console.log('Processing authentication code');
 
-        // Clear any existing sessions to prevent conflicts
-        await supabase.auth.signOut({ scope: 'local' });
+        try {
+          // Clear any existing sessions to prevent conflicts
+          console.log('Clearing existing sessions...');
+          await supabase.auth.signOut({ scope: 'local' });
+          console.log('Sessions cleared successfully');
 
-        // Exchange the code for a session
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+          // Exchange the code for a session
+          console.log('Exchanging code for session...');
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-        if (error) {
-          console.error('Error exchanging code for session:', error);
-          setError(error.message);
+          if (error) {
+            console.error('Error exchanging code for session:', error);
+            setError(`Authentication error: ${error.message}`);
+            setLoading(false);
+            return;
+          }
+
+          // Log session data (without sensitive info)
+          console.log('Session exchange successful:', data.session ? 'Session obtained' : 'No session returned');
+
+          // Success!
+          console.log('Successfully authenticated');
+          setSuccess(true);
           setLoading(false);
-          return;
+
+          // Use window.location instead of router to avoid potential redirect issues
+          console.log('Redirecting to home page in 2 seconds...');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        } catch (sessionError: any) {
+          console.error('Error during session exchange:', sessionError);
+          setError(`Session error: ${sessionError.message || 'Unknown session error'}`);
+          setLoading(false);
         }
-
-        // Success!
-        console.log('Successfully authenticated');
-        setSuccess(true);
-        setLoading(false);
-
-        // Use window.location instead of router to avoid potential redirect issues
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
       } catch (err: any) {
         console.error('Unexpected error in auth callback:', err);
-        setError(err.message || 'An unexpected error occurred');
+        setError(`Unexpected error: ${err.message || 'An unknown error occurred'}`);
         setLoading(false);
       }
     };
@@ -89,13 +115,21 @@ function CallbackHandler() {
             <Typography color="error" align="center" paragraph>
               {error}
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
               <Button
                 variant="contained"
                 component={Link}
                 href="/auth/login"
               >
                 Back to Login
+              </Button>
+              <Button
+                variant="outlined"
+                component={Link}
+                href="/auth/debug"
+                color="info"
+              >
+                Debug Authentication
               </Button>
             </Box>
           </>
