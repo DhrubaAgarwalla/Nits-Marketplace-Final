@@ -18,16 +18,16 @@ export default function AuthTest() {
         setSession(data.session);
       }
     };
-
+    
     checkSession();
-
+    
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
       }
     );
-
+    
     return () => {
       subscription.unsubscribe();
     };
@@ -37,31 +37,18 @@ export default function AuthTest() {
     setLoading(true);
     setError(null);
     setSuccess(null);
-
+    
     try {
       // Get the current URL information
       const currentUrl = new URL(window.location.href);
-      const isLocalhost = currentUrl.hostname === 'localhost';
-
+      
       // Log the URL for debugging
       console.log('Current URL:', currentUrl.toString());
-      console.log('Is localhost:', isLocalhost);
-
-      // Determine the correct redirect URL
-      let redirectUrl;
-
-      if (isLocalhost) {
-        // For local development, use localhost
-        redirectUrl = 'http://localhost:3000/auth/callback';
-        console.log('Using localhost redirect URL:', redirectUrl);
-      } else {
-        // For production, use the current origin
-        redirectUrl = `${currentUrl.origin}/auth/callback`;
-        console.log('Using production redirect URL:', redirectUrl);
-      }
-
-      console.log('Using redirect URL:', redirectUrl);
-
+      
+      // Use the API route for callback
+      const redirectUrl = `${currentUrl.origin}/api/auth/callback`;
+      console.log('Using API route for redirect URL:', redirectUrl);
+      
       // Attempt to sign in with Google
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -75,7 +62,7 @@ export default function AuthTest() {
           redirectTo: redirectUrl,
         },
       });
-
+      
       if (error) {
         setError(error.message);
       } else {
@@ -107,20 +94,20 @@ export default function AuthTest() {
         <Typography variant="h4" gutterBottom>
           Auth Test Page
         </Typography>
-
+        
         <Box sx={{ my: 2 }}>
           <Typography variant="h6">Environment Info:</Typography>
           <Typography>Hostname: {typeof window !== 'undefined' ? window.location.hostname : 'Server-side'}</Typography>
           <Typography>Origin: {typeof window !== 'undefined' ? window.location.origin : 'Server-side'}</Typography>
         </Box>
-
+        
         {session ? (
           <Box sx={{ my: 2 }}>
             <Typography variant="h6" color="success.main">Currently signed in</Typography>
             <Typography>User: {session.user?.email}</Typography>
-            <Button
-              variant="contained"
-              color="secondary"
+            <Button 
+              variant="contained" 
+              color="secondary" 
               onClick={handleSignOut}
               disabled={loading}
               sx={{ mt: 2 }}
@@ -131,9 +118,9 @@ export default function AuthTest() {
         ) : (
           <Box sx={{ my: 2 }}>
             <Typography variant="h6" color="error.main">Not signed in</Typography>
-            <Button
-              variant="contained"
-              color="primary"
+            <Button 
+              variant="contained" 
+              color="primary" 
               onClick={handleGoogleSignIn}
               disabled={loading}
               sx={{ mt: 2 }}
@@ -142,13 +129,13 @@ export default function AuthTest() {
             </Button>
           </Box>
         )}
-
+        
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
             Error: {error}
           </Typography>
         )}
-
+        
         {success && (
           <Typography color="success.main" sx={{ mt: 2 }}>
             {success}
