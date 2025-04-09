@@ -24,6 +24,11 @@ export async function middleware(req: NextRequest) {
 
       // Redirect to the login page with an error message
       const url = req.nextUrl.clone();
+
+      // Get the site URL from environment or use the request origin
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+
+      // Set the full URL for the redirect
       url.pathname = '/auth/login';
       url.searchParams.set('error', 'Only NIT Silchar email addresses (.nits.ac.in) are allowed to use this platform.');
 
