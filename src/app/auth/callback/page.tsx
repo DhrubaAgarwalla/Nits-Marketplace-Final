@@ -5,6 +5,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Box, Typography, Button, Paper, CircularProgress, Container } from '@mui/material';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Script from 'next/script';
 
 // Create a component that uses the searchParams
 function CallbackHandler() {
@@ -23,10 +24,61 @@ function CallbackHandler() {
         // Log the full URL for debugging
         console.log('Full callback URL:', window.location.href);
 
+        // Check if we have a hash fragment
+        const hashFragment = window.location.hash ? window.location.hash.substring(1) : '';
+        console.log('Hash fragment present:', !!hashFragment);
+
+        // Special handling for access_token in hash (implicit flow)
+        if (hashFragment && hashFragment.includes('access_token=')) {
+          console.log('Detected access_token in hash fragment - using implicit flow');
+
+          try {
+            // This is the implicit flow - we need to set the session directly
+            const { data, error } = await supabase.auth.getSession();
+
+            if (error) {
+              throw error;
+            }
+
+            if (data.session) {
+              console.log('Session already established');
+              setSuccess(true);
+              setLoading(false);
+
+              // Redirect to home page
+              setTimeout(() => {
+                window.location.href = '/';
+              }, 2000);
+              return;
+            } else {
+              // Try to set the session from the hash
+              console.log('Setting session from hash');
+              const { error: setSessionError } = await supabase.auth.setSession(hashFragment);
+
+              if (setSessionError) {
+                throw setSessionError;
+              }
+
+              setSuccess(true);
+              setLoading(false);
+
+              // Redirect to home page
+              setTimeout(() => {
+                window.location.href = '/';
+              }, 2000);
+              return;
+            }
+          } catch (sessionError: any) {
+            console.error('Error setting session from hash:', sessionError);
+            setError(`Session error: ${sessionError.message}`);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Standard authorization code flow
         // Check if we have a hash fragment that might contain the code
-        const hashParams = new URLSearchParams(
-          window.location.hash ? window.location.hash.substring(1) : ''
-        );
+        const hashParams = new URLSearchParams(hashFragment);
 
         // Try to get code from query params first, then from hash if not found
         let code = searchParams.get('code');
@@ -66,17 +118,37 @@ function CallbackHandler() {
         console.log('Processing authentication code');
 
         try {
-          // Clear any existing sessions to prevent conflicts
-          console.log('Clearing existing sessions...');
-          await supabase.auth.signOut({ scope: 'local' });
-          console.log('Sessions cleared successfully');
-
-          // Exchange the code for a session
+          // Don't clear existing sessions here - it might be causing issues
+          // Just try to exchange the code for a session directly
           console.log('Exchanging code for session...');
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
           if (error) {
             console.error('Error exchanging code for session:', error);
+
+            // If we get an error, try to get the session directly as a fallback
+            console.log('Trying to get session as fallback...');
+            const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+            if (sessionError) {
+              throw sessionError;
+            }
+
+            if (sessionData.session) {
+              // We have a session despite the error, so we can proceed
+              console.log('Session found despite exchange error');
+              setSuccess(true);
+              setLoading(false);
+
+              // Redirect to home page
+              console.log('Redirecting to home page in 2 seconds...');
+              setTimeout(() => {
+                window.location.href = '/';
+              }, 2000);
+              return;
+            }
+
+            // If we still don't have a session, show the error
             setError(`Authentication error: ${error.message}`);
             setLoading(false);
             return;
@@ -200,8 +272,15 @@ function AuthLoading() {
 // Main component that wraps CallbackHandler in Suspense
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<AuthLoading />}>
-      <CallbackHandler />
-    </Suspense>
+    <>
+      {/* Include the access token handler script */}
+      <Script
+        src="/auth/callback/access-token-handler.js"
+        strategy="beforeInteractive"
+      />
+      <Suspense fallback={<AuthLoading />}>
+        <CallbackHandler />
+      </Suspense>
+    </>
   );
 }
