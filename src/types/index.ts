@@ -27,12 +27,19 @@ export enum ListingType {
   RENT = 'rent',
 }
 
+// Price negotiability enum
+export enum PriceType {
+  FIXED = 'fixed',
+  NEGOTIABLE = 'negotiable',
+}
+
 // Item interface
 export interface Item {
   id: string;
   title: string;
   description: string;
   price: number;
+  priceType: PriceType;
   category: ItemCategory;
   listingType: ListingType;
   condition?: string;

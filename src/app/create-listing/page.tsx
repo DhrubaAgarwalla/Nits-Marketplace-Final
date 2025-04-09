@@ -41,7 +41,7 @@ import MainLayout from '@/components/MainLayout';
 import { useAuth } from '@/context/AuthContext';
 import { createItem, uploadItemImage } from '@/services/itemService';
 import { getUserById } from '@/services/userService';
-import { ItemCategory, ListingType } from '@/types';
+import { ItemCategory, ListingType, PriceType } from '@/types';
 
 export default function CreateListingPage() {
   const { user } = useAuth();
@@ -52,6 +52,7 @@ export default function CreateListingPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [priceType, setPriceType] = useState<PriceType>(PriceType.FIXED);
   const [category, setCategory] = useState<ItemCategory | ''>('');
   const [listingType, setListingType] = useState<ListingType | ''>('');
   const [condition, setCondition] = useState('');
@@ -219,6 +220,7 @@ export default function CreateListingPage() {
         title,
         description,
         price: numericPrice,
+        priceType,
         category: category as ItemCategory,
         listingType: listingType as ListingType,
         condition: condition || undefined,
@@ -348,6 +350,29 @@ export default function CreateListingPage() {
                   required
                   disabled={loading || success}
                 />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Price Type</InputLabel>
+                  <Select
+                    value={priceType}
+                    onChange={(e) => setPriceType(e.target.value as PriceType)}
+                    label="Price Type"
+                    disabled={loading || success}
+                  >
+                    <MenuItem value={PriceType.FIXED} sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        Fixed Price
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value={PriceType.NEGOTIABLE} sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        Negotiable
+                      </Box>
+                    </MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
 
               <Grid item xs={12} sm={6}>
@@ -537,9 +562,17 @@ export default function CreateListingPage() {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                    ₹{price}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
+                      ₹{price}
+                    </Typography>
+                    <Chip
+                      size="small"
+                      label={priceType === PriceType.FIXED ? 'Fixed Price' : 'Negotiable'}
+                      color={priceType === PriceType.FIXED ? 'default' : 'info'}
+                      sx={{ mt: 1 }}
+                    />
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>

@@ -63,6 +63,7 @@ export async function getItems(options?: {
     createdAt: item.created_at,
     updatedAt: item.updated_at,
     listingType: item.listing_type,
+    priceType: item.price_type,
     user: item.user ? {
       ...item.user,
       fullName: item.user.full_name,
@@ -96,6 +97,7 @@ export async function getItemById(id: string) {
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       listingType: data.listing_type,
+      priceType: data.price_type,
       user: data.user ? {
         ...data.user,
         fullName: data.user.full_name,
@@ -127,6 +129,7 @@ export async function createItem(item: Omit<Item, 'id' | 'createdAt' | 'updatedA
       title: item.title,
       description: item.description,
       price: item.price,
+      price_type: item.priceType, // Map priceType to price_type
       category: item.category,
       listing_type: item.listingType, // Map listingType to listing_type
       condition: item.condition,
@@ -173,6 +176,7 @@ export async function updateItem(id: string, updates: Partial<Omit<Item, 'id' | 
 
     if (updates.userId) dbUpdates.user_id = updates.userId;
     if (updates.listingType) dbUpdates.listing_type = updates.listingType;
+    if (updates.priceType) dbUpdates.price_type = updates.priceType;
 
     // Copy other fields directly
     if (updates.title) dbUpdates.title = updates.title;
@@ -285,6 +289,7 @@ export async function getItemsByUserId(userId: string) {
     userId: item.user_id,
     createdAt: item.created_at,
     updatedAt: item.updated_at,
-    listingType: item.listing_type
+    listingType: item.listing_type,
+    priceType: item.price_type
   })) as Item[];
 }

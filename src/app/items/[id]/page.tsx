@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import MainLayout from '@/components/MainLayout';
 import { getItemById } from '@/services/itemService';
-import { Item, ListingType } from '@/types';
+import { Item, ListingType, PriceType } from '@/types';
 import ExternalImage from '@/components/ExternalImage';
 import Link from 'next/link';
 
@@ -231,10 +231,17 @@ export default function ItemDetailPage() {
                 />
               </Box>
 
-              <Typography variant="h3" color="primary.main" gutterBottom>
-                {formatPrice(item.price)}
-                {item.listingType === ListingType.RENT && <span style={{ fontSize: '1rem' }}> /month</span>}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                <Typography variant="h3" color="primary.main">
+                  {formatPrice(item.price)}
+                  {item.listingType === ListingType.RENT && <span style={{ fontSize: '1rem' }}> /month</span>}
+                </Typography>
+                <Chip
+                  label={item.priceType === PriceType.FIXED ? 'Fixed Price' : 'Negotiable'}
+                  color={item.priceType === PriceType.FIXED ? 'default' : 'info'}
+                  size="medium"
+                />
+              </Box>
 
               <Divider sx={{ my: 2 }} />
 
