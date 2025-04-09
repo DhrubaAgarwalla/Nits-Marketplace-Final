@@ -41,27 +41,64 @@ export default function Home() {
             src="/header.jpg"
             alt="NIT Silchar Campus"
             fill
-            style={{ objectFit: 'cover' }}
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+              filter: 'brightness(1.1) contrast(1.1)'
+            }}
             priority
+            quality={100}
           />
         </div>
         {/* Overlay */}
         <div className={styles.heroOverlay} />
         <Container maxWidth="md" className={styles.heroContent}>
-          <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h2"
+            component="h1"
+            gutterBottom
+            fontWeight="bold"
+            sx={{
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              letterSpacing: '0.02em',
+              mb: 2
+            }}
+          >
             NIT Silchar Marketplace
           </Typography>
-          <Typography variant="h5" gutterBottom sx={{ mb: 4 }}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              mb: 4,
+              fontWeight: 400,
+              fontSize: { xs: '1.2rem', md: '1.5rem' },
+              maxWidth: '800px',
+              mx: 'auto',
+              lineHeight: 1.4
+            }}
+          >
             Buy, sell, and rent items within the NIT Silchar community
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, flexWrap: 'wrap' }}>
             <Button
               variant="contained"
               color="secondary"
               size="large"
               component={Link}
               href="/browse"
-              sx={{ px: 4, py: 1.5 }}
+              sx={{
+                px: 4,
+                py: 1.5,
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                },
+                transition: 'all 0.2s ease-in-out'
+              }}
             >
               Browse Items
             </Button>
@@ -70,7 +107,21 @@ export default function Home() {
               size="large"
               component={Link}
               href="/create-listing"
-              sx={{ px: 4, py: 1.5, color: 'white', borderColor: 'white' }}
+              sx={{
+                px: 4,
+                py: 1.5,
+                color: 'white',
+                borderColor: 'white',
+                borderWidth: 2,
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: 'white',
+                  transform: 'translateY(-2px)'
+                },
+                transition: 'all 0.2s ease-in-out'
+              }}
             >
               Sell or Rent Item
             </Button>
