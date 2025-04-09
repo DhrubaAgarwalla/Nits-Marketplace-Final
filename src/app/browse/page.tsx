@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { 
-  Container, 
-  Typography, 
-  Grid, 
-  Box, 
-  TextField, 
-  MenuItem, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  Slider, 
-  Button, 
-  Paper, 
+import {
+  Container,
+  Typography,
+  Grid,
+  Box,
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Slider,
+  Button,
+  Paper,
   CircularProgress,
   Pagination
 } from '@mui/material';
@@ -24,15 +24,16 @@ import ItemCard from '@/components/ItemCard';
 import { getItems } from '@/services/itemService';
 import { Item, ItemCategory, ListingType } from '@/types';
 
-export default function BrowsePage() {
+// Component that uses searchParams
+function BrowseContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') as ItemCategory | null;
-  
+
   // State for items and loading
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // State for filters
   const [searchQuery, setSearchQuery] = useState('');
   const [category, setCategory] = useState<ItemCategory | ''>( initialCategory || '');
@@ -40,16 +41,16 @@ export default function BrowsePage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 12;
-  
+
   // Fetch items on initial load and when filters change
   useEffect(() => {
     fetchItems();
   }, [category, listingType, page]);
-  
+
   const fetchItems = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const filters = {
         category: category as ItemCategory | undefined,
@@ -60,7 +61,7 @@ export default function BrowsePage() {
         limit: itemsPerPage,
         offset: (page - 1) * itemsPerPage,
       };
-      
+
       const data = await getItems(filters);
       setItems(data);
     } catch (err) {
@@ -70,20 +71,20 @@ export default function BrowsePage() {
       setLoading(false);
     }
   };
-  
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchItems();
   };
-  
+
   const handlePriceChange = (_event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as [number, number]);
   };
-  
+
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
-  
+
   const handleClearFilters = () => {
     setSearchQuery('');
     setCategory('');
@@ -91,14 +92,14 @@ export default function BrowsePage() {
     setPriceRange([0, 50000]);
     setPage(1);
   };
-  
+
   return (
     <MainLayout>
       <Container maxWidth="lg">
         <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
           Browse Items
         </Typography>
-        
+
         {/* Search and Filters */}
         <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
           <Box component="form" onSubmit={handleSearch}>
@@ -116,7 +117,7 @@ export default function BrowsePage() {
                   }}
                 />
               </Grid>
-              
+
               {/* Category filter */}
               <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth variant="outlined">
@@ -135,7 +136,7 @@ export default function BrowsePage() {
                   </Select>
                 </FormControl>
               </Grid>
-              
+
               {/* Listing type filter */}
               <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth variant="outlined">
@@ -148,14 +149,14 @@ export default function BrowsePage() {
                     <MenuItem value="">All Types</MenuItem>
                     {Object.values(ListingType).map((type) => (
                       <MenuItem key={type} value={type}>
-                        {type === ListingType.SELL ? 'For Sale' : 
+                        {type === ListingType.SELL ? 'For Sale' :
                          type === ListingType.BUY ? 'Wanted' : 'For Rent'}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
-              
+
               {/* Search button */}
               <Grid item xs={12} md={2}>
                 <Button
@@ -168,7 +169,7 @@ export default function BrowsePage() {
                 </Button>
               </Grid>
             </Grid>
-            
+
             {/* Price range slider */}
             <Box sx={{ mt: 3 }}>
               <Typography gutterBottom>Price Range (₹)</Typography>
@@ -190,7 +191,7 @@ export default function BrowsePage() {
             </Box>
           </Box>
         </Paper>
-        
+
         {/* Items grid */}
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
@@ -219,10 +220,10 @@ export default function BrowsePage() {
                 </Grid>
               ))}
             </Grid>
-            
+
             {/* Pagination */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
-              <Pagination 
+              <Pagination
                 count={10} // This would be calculated based on total items
                 page={page}
                 onChange={handlePageChange}
@@ -233,5 +234,14 @@ export default function BrowsePage() {
         )}
       </Container>
     </MainLayout>
+  );
+}
+
+// Main component with Suspense boundary
+export default function BrowsePage() {
+  return (
+    <Suspense fallback={<MainLayout><Container maxWidth="lg"><Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}><CircularProgress /></Box></Container></MainLayout>}>
+      <BrowseContent />
+    </Suspense>
   );
 }
