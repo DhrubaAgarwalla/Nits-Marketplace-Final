@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Container,
@@ -40,6 +40,7 @@ import {
 import MainLayout from '@/components/MainLayout';
 import { useAuth } from '@/context/AuthContext';
 import { createItem, uploadItemImage } from '@/services/itemService';
+import { getUserById } from '@/services/userService';
 import { ItemCategory, ListingType } from '@/types';
 
 export default function CreateListingPage() {
@@ -65,9 +66,44 @@ export default function CreateListingPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Profile check state
+  const [isProfileComplete, setIsProfileComplete] = useState(true);
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+
   // Step state for multi-step form
   const [activeStep, setActiveStep] = useState(0);
   const steps = ['Basic Info', 'Details', 'Images', 'Review'];
+
+  // Check if user profile is complete when component mounts
+  useEffect(() => {
+    if (user) {
+      setIsCheckingProfile(true);
+
+      const checkProfileCompletion = async () => {
+        try {
+          const userData = await getUserById(user.id);
+
+          // Check if profile is incomplete (missing name, department, or scholar ID)
+          const isIncomplete = !userData.fullName || !userData.department || !userData.scholarId;
+
+          setIsProfileComplete(!isIncomplete);
+
+          // If WhatsApp number is available in profile, use it
+          if (userData.whatsappNumber) {
+            setWhatsappNumber(userData.whatsappNumber);
+          }
+        } catch (err) {
+          console.error('Error checking profile completion:', err);
+          // Default to allowing listing creation if check fails
+          setIsProfileComplete(true);
+        } finally {
+          setIsCheckingProfile(false);
+        }
+      };
+
+      checkProfileCompletion();
+    }
+  }, [user]);
 
   // Handle next step
   const handleNext = () => {
@@ -133,6 +169,12 @@ export default function CreateListingPage() {
 
     if (!user) {
       setError('You must be logged in to create a listing');
+      return;
+    }
+
+    // Check if profile is complete
+    if (!isProfileComplete) {
+      setError('Please complete your profile before creating a listing');
       return;
     }
 
@@ -257,7 +299,7 @@ export default function CreateListingPage() {
         return (
           <Box sx={{ mt: 3 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required>
                   <InputLabel>Listing Type</InputLabel>
                   <Select
@@ -268,21 +310,31 @@ export default function CreateListingPage() {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          maxHeight: 300,
+                          maxHeight: 150,
                           width: 'auto',
-                          minWidth: '100%'
+                          minWidth: '200px',
+                          maxWidth: '250px',
+                          overflowX: 'hidden'
                         },
+                      },
+                      anchorOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      },
+                      transformOrigin: {
+                        vertical: 'top',
+                        horizontal: 'left',
                       },
                     }}
                   >
-                    <MenuItem value={ListingType.SELL}>I want to sell</MenuItem>
-                    <MenuItem value={ListingType.BUY}>I want to buy</MenuItem>
-                    <MenuItem value={ListingType.RENT}>I want to rent out</MenuItem>
+                    <MenuItem value={ListingType.SELL} sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>I want to sell</MenuItem>
+                    <MenuItem value={ListingType.BUY} sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>I want to buy</MenuItem>
+                    <MenuItem value={ListingType.RENT} sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>I want to rent out</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Price"
@@ -298,7 +350,7 @@ export default function CreateListingPage() {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required>
                   <InputLabel>Category</InputLabel>
                   <Select
@@ -309,15 +361,25 @@ export default function CreateListingPage() {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          maxHeight: 300,
+                          maxHeight: 200,
                           width: 'auto',
-                          minWidth: '100%'
+                          minWidth: '200px',
+                          maxWidth: '250px',
+                          overflowX: 'hidden'
                         },
+                      },
+                      anchorOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      },
+                      transformOrigin: {
+                        vertical: 'top',
+                        horizontal: 'left',
                       },
                     }}
                   >
                     {Object.values(ItemCategory).map((cat) => (
-                      <MenuItem key={cat} value={cat}>
+                      <MenuItem key={cat} value={cat} sx={{ whiteSpace: 'normal', fontSize: '0.9rem', py: 0.75 }}>
                         {cat}
                       </MenuItem>
                     ))}
@@ -325,7 +387,7 @@ export default function CreateListingPage() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Condition"
@@ -550,6 +612,20 @@ export default function CreateListingPage() {
             <Alert severity="warning" sx={{ mb: 3 }}>
               You need to be logged in to create a listing.
               Please <Button href="/auth/login">sign in</Button> first.
+            </Alert>
+          )}
+
+          {user && !isProfileComplete && (
+            <Alert severity="warning" sx={{ mb: 3 }}>
+              Please complete your profile before creating a listing.
+              <Button
+                color="inherit"
+                size="small"
+                sx={{ ml: 1 }}
+                onClick={() => router.push('/profile')}
+              >
+                Update Profile
+              </Button>
             </Alert>
           )}
 

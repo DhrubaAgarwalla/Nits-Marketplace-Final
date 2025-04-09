@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ProfileCompletionDialog from './ProfileCompletionDialog';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -36,6 +37,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         {children}
       </Container>
       <Footer />
+      <ProfileCompletionDialog />
     </Box>
   );
 }
