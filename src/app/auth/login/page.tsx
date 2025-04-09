@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Box,
   Container,
@@ -17,12 +17,12 @@ import { Google as GoogleIcon, Email as EmailIcon } from '@mui/icons-material';
 import { useAuth } from '@/context/AuthContext';
 import MainLayout from '@/components/MainLayout';
 
-export default function LoginPage() {
+// Component that uses searchParams
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const { signIn, signInWithGoogle } = useAuth();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // Check for error message in URL (from middleware)
@@ -151,5 +151,14 @@ export default function LoginPage() {
         </Paper>
       </Container>
     </MainLayout>
+  );
+}
+
+// Main component with Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<MainLayout><Container maxWidth="sm"><CircularProgress /></Container></MainLayout>}>
+      <LoginContent />
+    </Suspense>
   );
 }
