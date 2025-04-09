@@ -25,7 +25,7 @@ import {
 import MainLayout from '@/components/MainLayout';
 import { getItemById } from '@/services/itemService';
 import { Item, ListingType } from '@/types';
-import Image from 'next/image';
+import ExternalImage from '@/components/ExternalImage';
 import Link from 'next/link';
 
 export default function ItemDetailPage() {
@@ -161,11 +161,9 @@ export default function ItemDetailPage() {
                 }}
               >
                 {selectedImage ? (
-                  <Image
+                  <ExternalImage
                     src={selectedImage}
                     alt={item.title}
-                    fill
-                    unoptimized
                     style={{ objectFit: 'contain' }}
                   />
                 ) : (
@@ -207,12 +205,11 @@ export default function ItemDetailPage() {
                         borderColor: img === selectedImage ? 'primary.main' : 'grey.300',
                       }}
                     >
-                      <Image
+                      <ExternalImage
                         src={img}
                         alt={`${item.title} - image ${index + 1}`}
-                        fill
-                        unoptimized
                         style={{ objectFit: 'cover' }}
+                        onClick={() => setSelectedImage(img)}
                       />
                     </Box>
                   ))}
