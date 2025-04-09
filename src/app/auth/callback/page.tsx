@@ -18,6 +18,47 @@ function CallbackHandler() {
 
   // Rest of the component remains the same
 
+  // Add an event listener for the custom event from our script
+  useEffect(() => {
+    const handleTokenReady = async (event: any) => {
+      try {
+        console.log('Received token ready event');
+        const { accessToken } = event.detail;
+
+        if (accessToken && !success && loading) {
+          console.log('Processing access token from event');
+
+          // Try to sign in with the token
+          const { error } = await supabase.auth.signInWithPassword({
+            email: 'token-auth@example.com', // This won't be used
+            password: accessToken, // This won't be used
+          });
+
+          if (!error) {
+            console.log('Successfully signed in with token');
+            setSuccess(true);
+            setLoading(false);
+
+            // Redirect to home page
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 2000);
+          }
+        }
+      } catch (err) {
+        console.error('Error handling token ready event:', err);
+      }
+    };
+
+    // Add the event listener
+    window.addEventListener('supabase_auth_token_ready', handleTokenReady);
+
+    // Clean up
+    return () => {
+      window.removeEventListener('supabase_auth_token_ready', handleTokenReady);
+    };
+  }, [supabase.auth, success, loading]);
+
   useEffect(() => {
     const processCode = async () => {
       try {
@@ -27,6 +68,12 @@ function CallbackHandler() {
         // Check if we have a hash fragment
         const hashFragment = window.location.hash ? window.location.hash.substring(1) : '';
         console.log('Hash fragment present:', !!hashFragment);
+
+        // Also check sessionStorage for tokens that might have been stored by our script
+        const storedParams = sessionStorage.getItem('supabase_auth_callback_params');
+        if (storedParams && !hashFragment) {
+          console.log('Found stored auth params in sessionStorage');
+        }
 
         // Special handling for access_token in hash (implicit flow)
         if (hashFragment && hashFragment.includes('access_token=')) {
@@ -51,12 +98,56 @@ function CallbackHandler() {
               }, 2000);
               return;
             } else {
-              // Try to set the session from the hash
-              console.log('Setting session from hash');
-              const { error: setSessionError } = await supabase.auth.setSession(hashFragment);
+              // Try to parse the hash fragment and extract the access token directly
+              console.log('Parsing hash fragment for access token');
 
-              if (setSessionError) {
-                throw setSessionError;
+              try {
+                // Parse the hash fragment
+                const params = new URLSearchParams(hashFragment);
+                const accessToken = params.get('access_token');
+                const refreshToken = params.get('refresh_token');
+                const expiresIn = params.get('expires_in');
+                const tokenType = params.get('token_type') || 'bearer';
+
+                if (!accessToken) {
+                  throw new Error('No access token found in hash fragment');
+                }
+
+                console.log('Access token found, attempting to set session manually');
+
+                // Create a session object manually
+                const session = {
+                  access_token: accessToken,
+                  refresh_token: refreshToken || '',
+                  expires_in: parseInt(expiresIn || '3600', 10),
+                  token_type: tokenType,
+                };
+
+                // Set the session manually
+                const { error: setSessionError } = await supabase.auth.setSession(session);
+
+                if (setSessionError) {
+                  // If setting session fails, try a different approach
+                  console.log('Error setting session, trying signInWithIdToken');
+
+                  // Try to sign in with the token directly
+                  const { error: signInError } = await supabase.auth.signInWithIdToken({
+                    token: accessToken,
+                    nonce: 'NONCE', // This is required but not used in this context
+                  });
+
+                  if (signInError) {
+                    throw signInError;
+                  }
+                }
+              } catch (tokenError) {
+                console.error('Error processing access token:', tokenError);
+
+                // As a last resort, try to refresh the page without the hash
+                console.log('Trying to refresh the page without hash');
+                const cleanUrl = window.location.href.split('#')[0];
+                window.location.href = cleanUrl;
+                return;
               }
 
               setSuccess(true);
@@ -273,11 +364,23 @@ function AuthLoading() {
 export default function AuthCallbackPage() {
   return (
     <>
-      {/* Include the access token handler script */}
+      {/* Include the access token handler scripts */}
       <Script
         src="/auth/callback/access-token-handler.js"
         strategy="beforeInteractive"
       />
+      <Script
+        src="/auth/callback/direct-auth.js"
+        strategy="afterInteractive"
+      />
+
+      {/* Add Supabase URL and key as global variables */}
+      <Script id="supabase-config">
+        {`
+          window.SUPABASE_URL = '${process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://uhbslznabvkxrrkgeyaq.supabase.co'}';
+          window.SUPABASE_KEY = '${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoYnNsem5hYnZreHJya2dleWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI2NTI1NzYsImV4cCI6MjAyODIyODU3Nn0.Nh83ebqzf9Yt_1oJjHLSNnr-S_qHQwj_2Vj6zxq3C8E'}';
+        `}
+      </Script>
       <Suspense fallback={<AuthLoading />}>
         <CallbackHandler />
       </Suspense>
