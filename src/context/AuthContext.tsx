@@ -59,22 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Please use your NIT Silchar email address');
     }
 
-    // Get the current hostname
-    const hostname = window.location.hostname;
+    // Get the origin for the redirect URL
+    const origin = window.location.origin;
 
-    // Determine the correct redirect URL based on environment
-    let redirectUrl;
-
-    if (hostname === 'localhost') {
-      // Local development
-      redirectUrl = 'http://localhost:3000/auth/callback';
-    } else if (hostname.includes('vercel.app')) {
-      // Vercel deployment
-      redirectUrl = 'https://nits-marketplace-final.vercel.app/auth/callback';
-    } else {
-      // Fallback to current origin
-      redirectUrl = `${window.location.origin}/auth/callback`;
-    }
+    // Simple redirect URL - always use the current origin
+    const redirectUrl = `${origin}/auth/callback`;
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -91,22 +80,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Google sign in
   const signInWithGoogle = async () => {
     try {
-      // Get the current hostname
-      const hostname = window.location.hostname;
+      // Get the origin for the redirect URL
+      const origin = window.location.origin;
 
-      // Determine the correct redirect URL based on environment
-      let redirectUrl;
-
-      if (hostname === 'localhost') {
-        // Local development
-        redirectUrl = 'http://localhost:3000/auth/callback';
-      } else if (hostname.includes('vercel.app')) {
-        // Vercel deployment
-        redirectUrl = 'https://nits-marketplace-final.vercel.app/auth/callback';
-      } else {
-        // Fallback to current origin
-        redirectUrl = `${window.location.origin}/auth/callback`;
-      }
+      // Simple redirect URL - always use the current origin
+      const redirectUrl = `${origin}/auth/callback`;
 
       console.log('Using redirect URL:', redirectUrl);
 
