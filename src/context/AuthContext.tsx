@@ -74,6 +74,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Google sign in
   const signInWithGoogle = async () => {
     try {
+      // Determine the correct redirect URL
+      // For Vercel, use the NEXT_PUBLIC_SITE_URL environment variable
+      // For local development, use window.location.origin
+      const isVercel = typeof window !== 'undefined' &&
+                      window.location.hostname.includes('vercel.app');
+
+      // Force the Vercel URL if we're on Vercel
+      const redirectUrl = isVercel
+        ? 'https://nits-marketplace-final.vercel.app/auth/callback'
+        : `${window.location.origin}/auth/callback`;
+
+      console.log('Using redirect URL:', redirectUrl);
+
       // First, attempt to sign in with Google
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -84,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Restrict to NIT Silchar domain
             hd: 'nits.ac.in',
           },
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         },
       });
 

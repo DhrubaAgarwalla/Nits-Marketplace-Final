@@ -6,8 +6,16 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
-  // Get the site URL from the request or environment variable
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin;
+  // Determine if we're on Vercel
+  const isVercel = requestUrl.hostname.includes('vercel.app');
+
+  // Force the Vercel URL if we're on Vercel, otherwise use the request origin
+  const siteUrl = isVercel
+    ? 'https://nits-marketplace-final.vercel.app'
+    : requestUrl.origin;
+
+  console.log('Callback processing with URL:', requestUrl.toString());
+  console.log('Using site URL for redirect:', siteUrl);
 
   if (code) {
     try {
@@ -25,5 +33,8 @@ export async function GET(request: NextRequest) {
 
   // Always redirect to the site URL, not localhost
   // This ensures it works on both local and production environments
-  return NextResponse.redirect(`${siteUrl}/`);
+  const redirectUrl = `${siteUrl}/`;
+  console.log('Redirecting to:', redirectUrl);
+
+  return NextResponse.redirect(redirectUrl);
 }
