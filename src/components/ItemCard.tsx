@@ -79,14 +79,27 @@ export default function ItemCard({ item }: ItemCardProps) {
       '& .MuiCardContent-root': {
         width: '100%',
         boxSizing: 'border-box',
-        padding: '16px',
+        padding: { xs: '12px', sm: '16px' },
+      },
+      // Optimize for mobile
+      '@media (max-width: 600px)': {
+        borderRadius: '8px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
       }
     }}>
       <CardActionArea component={Link} href={`/items/${id}`}>
         {images && images.length > 0 ? (
           <CardMedia
             component="img"
-            height="200"
+            sx={{
+              height: { xs: '180px', sm: '200px' },
+              objectFit: 'cover',
+              objectPosition: 'center',
+              '@media (max-width: 600px)': {
+                borderTopLeftRadius: '8px',
+                borderTopRightRadius: '8px',
+              }
+            }}
             image={images[0]}
             alt={title}
           />

@@ -31,9 +31,23 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   // Full layout for client-side rendering
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      // Improve mobile performance by setting overflow-x to hidden
+      overflowX: 'hidden',
+    }}>
       <Navbar />
-      <Container component="main" sx={{ flexGrow: 1, py: 4 }} maxWidth="lg">
+      <Container
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: { xs: 2, sm: 3, md: 4 },
+          px: { xs: 1, sm: 2, md: 3 },
+        }}
+        maxWidth="lg"
+      >
         {children}
       </Container>
       <Footer />

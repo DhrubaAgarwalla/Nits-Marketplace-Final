@@ -33,6 +33,7 @@ export default function Navbar() {
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -66,12 +67,16 @@ export default function Navbar() {
   ];
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center', paddingTop: '8px' }}>
       <Box sx={{ my: 2, display: 'flex', justifyContent: 'center' }}>
         <Box
+          component={Link}
+          href="/"
+          onClick={handleDrawerToggle}
           sx={{
             display: 'flex',
             alignItems: 'center',
+            textDecoration: 'none',
           }}
         >
           <Box
@@ -108,18 +113,119 @@ export default function Navbar() {
           </Typography>
         </Box>
       </Box>
-      <List>
+      <List sx={{ width: '100%' }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} component={Link} href={item.href}>
-            <ListItemText primary={item.text} />
+          <ListItem
+            key={item.text}
+            component={Link}
+            href={item.href}
+            onClick={handleDrawerToggle}
+            sx={{
+              py: 1.5,
+              borderBottom: '1px solid rgba(0,0,0,0.06)',
+            }}
+          >
+            <ListItemText
+              primary={item.text}
+              primaryTypographyProps={{
+                fontWeight: 500,
+                fontSize: '1rem',
+              }}
+            />
           </ListItem>
         ))}
-        <ListItem component={Link} href="/browse">
-          <ListItemText primary="Search" />
+        <ListItem
+          component={Link}
+          href="/browse"
+          onClick={handleDrawerToggle}
+          sx={{
+            py: 1.5,
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+          }}
+        >
+          <ListItemText
+            primary="Search"
+            primaryTypographyProps={{
+              fontWeight: 500,
+              fontSize: '1rem',
+            }}
+          />
         </ListItem>
-        {!user && (
-          <ListItem component={Link} href="/auth/login">
-            <ListItemText primary="Login" />
+        {user ? (
+          <>
+            <ListItem
+              component={Link}
+              href="/profile"
+              onClick={handleDrawerToggle}
+              sx={{
+                py: 1.5,
+                borderBottom: '1px solid rgba(0,0,0,0.06)',
+              }}
+            >
+              <ListItemText
+                primary="My Profile"
+                primaryTypographyProps={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                }}
+              />
+            </ListItem>
+            <ListItem
+              component={Link}
+              href="/my-listings"
+              onClick={handleDrawerToggle}
+              sx={{
+                py: 1.5,
+                borderBottom: '1px solid rgba(0,0,0,0.06)',
+              }}
+            >
+              <ListItemText
+                primary="My Listings"
+                primaryTypographyProps={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                }}
+              />
+            </ListItem>
+            <ListItem
+              button
+              onClick={() => {
+                handleDrawerToggle();
+                handleSignOut();
+              }}
+              sx={{
+                py: 1.5,
+                borderBottom: '1px solid rgba(0,0,0,0.06)',
+              }}
+            >
+              <ListItemText
+                primary="Logout"
+                primaryTypographyProps={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                  color: 'error.main',
+                }}
+              />
+            </ListItem>
+          </>
+        ) : (
+          <ListItem
+            component={Link}
+            href="/auth/login"
+            onClick={handleDrawerToggle}
+            sx={{
+              py: 1.5,
+              borderBottom: '1px solid rgba(0,0,0,0.06)',
+            }}
+          >
+            <ListItemText
+              primary="Login"
+              primaryTypographyProps={{
+                fontWeight: 500,
+                fontSize: '1rem',
+                color: 'primary.main',
+              }}
+            />
           </ListItem>
         )}
       </List>
@@ -128,8 +234,18 @@ export default function Navbar() {
 
   return (
     <>
-      <AppBar position="static" elevation={0} sx={{ backgroundColor: 'white', color: 'primary.main' }}>
-        <Toolbar>
+      <AppBar position="static" elevation={0} sx={{
+        backgroundColor: 'white',
+        color: 'primary.main',
+        // Make navbar sticky on mobile for better UX
+        position: { xs: 'sticky', md: 'static' },
+        top: 0,
+        zIndex: (theme) => theme.zIndex.drawer + 1
+      }}>
+        <Toolbar sx={{
+          px: { xs: 1, sm: 2, md: 3 },
+          minHeight: { xs: '56px', sm: '64px' }
+        }}>
           {isMobile && (
             <IconButton
               color="inherit"
@@ -160,29 +276,31 @@ export default function Navbar() {
                 background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
                 color: 'white',
                 borderRadius: '8px',
-                px: 1.5,
-                py: 0.5,
-                mr: 1,
+                px: { xs: 1, sm: 1.5 },
+                py: { xs: 0.3, sm: 0.5 },
+                mr: { xs: 0.5, sm: 1 },
                 boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               }}
             >
               <Typography
-                variant="h6"
+                variant={isSmallMobile ? 'subtitle1' : 'h6'}
                 sx={{
                   fontWeight: 800,
                   letterSpacing: '0.5px',
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                  fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' },
                 }}
               >
                 NITS
               </Typography>
             </Box>
             <Typography
-              variant="h6"
+              variant={isSmallMobile ? 'subtitle1' : 'h6'}
               sx={{
                 fontWeight: 700,
                 color: 'primary.main',
                 letterSpacing: '0.5px',
+                fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' },
               }}
             >
               BAZAAR
@@ -258,7 +376,16 @@ export default function Navbar() {
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: { xs: '85%', sm: 320 },
+            maxWidth: '100%',
+            borderRadius: { xs: '0 16px 16px 0' },
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          },
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }
         }}
       >
         {drawer}

@@ -1,7 +1,7 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
-// NIT Silchar colors
-const theme = createTheme({
+// Create base theme with NIT Silchar colors
+let theme = createTheme({
   palette: {
     primary: {
       main: '#1976d2', // Blue color representing NIT Silchar
@@ -40,6 +40,11 @@ const theme = createTheme({
         root: {
           borderRadius: 8,
           padding: '10px 20px',
+          // Responsive padding for mobile
+          '@media (max-width:600px)': {
+            padding: '8px 16px',
+            fontSize: '0.875rem',
+          },
         },
         contained: {
           boxShadow: 'none',
@@ -59,10 +64,52 @@ const theme = createTheme({
             transform: 'translateY(-4px)',
             boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.1)',
           },
+          // Disable hover effect on mobile for better performance
+          '@media (max-width:600px)': {
+            '&:hover': {
+              transform: 'none',
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)',
+            },
+          },
+        },
+      },
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          // Add padding for mobile screens
+          '@media (max-width:600px)': {
+            padding: '0 16px',
+          },
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          // Reduce padding on mobile
+          '@media (max-width:600px)': {
+            paddingLeft: 8,
+            paddingRight: 8,
+            minHeight: 56,
+          },
         },
       },
     },
   },
+  // Custom breakpoints for better mobile responsiveness
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
 });
+
+// Apply responsive font sizes
+theme = responsiveFontSizes(theme);
 
 export default theme;
