@@ -213,9 +213,9 @@ function BrowseContent() {
           </Box>
         ) : (
           <>
-            <Grid container spacing={3} sx={{ width: '100%', maxWidth: '100%' }}>
+            <Grid container spacing={{ xs: 1, sm: 2, md: 3 }} sx={{ width: '100%', maxWidth: '100%' }}>
               {items.map((item) => (
-                <Grid item key={item.id} xs={12} sm={6} md={4} lg={3} sx={{ maxWidth: '100%' }}>
+                <Grid item key={item.id} xs={6} sm={6} md={4} lg={3} sx={{ maxWidth: '100%' }}>
                   <ItemCard item={item} />
                 </Grid>
               ))}

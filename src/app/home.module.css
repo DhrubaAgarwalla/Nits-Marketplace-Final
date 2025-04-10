@@ -1,13 +1,26 @@
 .gridContainer {
   display: flex;
   flex-wrap: wrap;
-  margin: -8px;
+  margin: -4px;
+}
+
+@media (max-width: 600px) {
+  .gridContainer {
+    margin: -2px;
+  }
 }
 
 .gridItem {
   padding: 8px;
   width: 100%;
   flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+  .gridItem {
+    padding: 4px;
+    width: 50%;
+  }
 }
 
 /* Small devices (tablets) */
@@ -37,6 +50,14 @@
   background-color: #f5f5f5;
 }
 
+@media (max-width: 600px) {
+  .heroSection {
+    height: 400px;
+    margin-bottom: 32px;
+    border-radius: 8px;
+  }
+}
+
 .heroContent {
   position: relative;
   z-index: 2;
@@ -48,6 +69,15 @@
   border-radius: 16px;
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .heroContent {
+    padding: 1rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 320px;
+  }
 }
 
 .heroTitle {
