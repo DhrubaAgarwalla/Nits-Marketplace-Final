@@ -98,6 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Google sign in
   const signInWithGoogle = async () => {
     try {
+      // Store the current URL to return to if the user cancels
+      sessionStorage.setItem('auth_return_url', window.location.href);
+
       // Get the current URL information
       const currentUrl = new URL(window.location.href);
       const isLocalhost = currentUrl.hostname === 'localhost';
@@ -123,7 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await supabase.auth.signOut({ scope: 'local' });
 
       // First, attempt to sign in with Google
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error, data } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           queryParams: {
@@ -138,6 +141,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         throw error;
+      }
+
+      // If we don't have a provider URL, something went wrong
+      if (!data?.url) {
+        throw new Error('No provider URL returned');
       }
 
       // Add a listener for when the user returns from OAuth

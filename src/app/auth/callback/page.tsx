@@ -193,13 +193,31 @@ function CallbackHandler() {
           console.error('Error in auth callback URL:', errorMessage);
           setError(errorMessage);
           setLoading(false);
+
+          // If this was a user cancellation, redirect back to the login page after a short delay
+          if (errorParam === 'access_denied' || errorParam.includes('cancel')) {
+            console.log('User cancelled the authentication process');
+            setTimeout(() => {
+              // Try to get the return URL from sessionStorage
+              const returnUrl = sessionStorage.getItem('auth_return_url') || '/auth/login';
+              window.location.href = returnUrl;
+            }, 2000);
+          }
           return;
         }
 
-        // If there's no code, show an error
+        // If there's no code, it might be a cancellation or back button press
         if (!code) {
-          setError('No authentication code provided. Check URL format.');
+          console.log('No authentication code provided - likely a cancellation');
+          setError('Authentication was cancelled or interrupted.');
           setLoading(false);
+
+          // Redirect back to the login page after a short delay
+          setTimeout(() => {
+            // Try to get the return URL from sessionStorage
+            const returnUrl = sessionStorage.getItem('auth_return_url') || '/auth/login';
+            window.location.href = returnUrl;
+          }, 2000);
           return;
         }
 
@@ -292,10 +310,12 @@ function CallbackHandler() {
         {error && (
           <>
             <Typography color="error" variant="h6" align="center" gutterBottom>
-              Authentication Failed
+              {error.includes('cancelled') ? 'Authentication Cancelled' : 'Authentication Failed'}
             </Typography>
-            <Typography color="error" align="center" paragraph>
-              {error}
+            <Typography align="center" paragraph>
+              {error.includes('cancelled')
+                ? 'You cancelled the authentication process or pressed the back button. Redirecting you back...'
+                : error}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
               <Button
@@ -305,14 +325,16 @@ function CallbackHandler() {
               >
                 Back to Login
               </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/auth/debug"
-                color="info"
-              >
-                Debug Authentication
-              </Button>
+              {!error.includes('cancelled') && (
+                <Button
+                  variant="outlined"
+                  component={Link}
+                  href="/auth/debug"
+                  color="info"
+                >
+                  Debug Authentication
+                </Button>
+              )}
             </Box>
           </>
         )}
