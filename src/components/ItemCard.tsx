@@ -15,6 +15,8 @@ import {
 import { WhatsApp as WhatsAppIcon } from '@mui/icons-material';
 import { Item, ListingType } from '@/types';
 import Link from 'next/link';
+import Image from 'next/image';
+import { imageLoader } from '@/utils/imageLoader';
 
 interface ItemCardProps {
   item: Item;
@@ -92,20 +94,27 @@ export default function ItemCard({ item }: ItemCardProps) {
     }}>
       <CardActionArea component={Link} href={`/items/${id}`}>
         {images && images.length > 0 ? (
-          <CardMedia
-            component="img"
-            sx={{
-              height: { xs: '140px', sm: '200px' },
-              objectFit: 'cover',
-              objectPosition: 'center',
-              '@media (max-width: 600px)': {
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px',
-              }
-            }}
-            image={images[0]}
-            alt={title}
-          />
+          <Box sx={{
+            position: 'relative',
+            height: { xs: '140px', sm: '200px' },
+            '@media (max-width: 600px)': {
+              borderTopLeftRadius: '8px',
+              borderTopRightRadius: '8px',
+            }
+          }}>
+            <Image
+              loader={imageLoader}
+              src={images[0]}
+              alt={title}
+              fill
+              sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 33vw"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+              priority={false}
+            />
+          </Box>
         ) : (
           <Box
             sx={{
