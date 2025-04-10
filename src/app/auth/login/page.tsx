@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 import { useSearchParams } from 'next/navigation';
 import {
   Box,
