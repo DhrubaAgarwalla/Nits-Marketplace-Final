@@ -1,10 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-// Disable static generation for this page
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
 import { useRouter } from 'next/navigation';
 import {
   Container,
@@ -68,11 +64,11 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
+  
   // Step state for multi-step form
   const [activeStep, setActiveStep] = useState(0);
   const steps = ['Basic Info', 'Details', 'Images', 'Review'];
-
+  
   // Original item data for comparison
   const [originalItem, setOriginalItem] = useState<Item | null>(null);
 
@@ -80,23 +76,23 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchItem = async () => {
       if (!id) return;
-
+      
       try {
         const item = await getItemById(id);
-
+        
         if (!item) {
           setError('Listing not found');
           setInitialLoading(false);
           return;
         }
-
+        
         // Check if the current user is the owner of the item
         if (user && item.userId !== user.id) {
           setError('You do not have permission to edit this listing');
           setInitialLoading(false);
           return;
         }
-
+        
         // Set the form state with the item data
         setTitle(item.title);
         setDescription(item.description);
@@ -105,15 +101,15 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
         setListingType(item.listingType);
         setCondition(item.condition || '');
         setExistingImages(item.images || []);
-
+        
         // Set the original item for comparison
         setOriginalItem(item);
-
+        
         // If the user has a WhatsApp number, use it
         if (item.user?.whatsappNumber) {
           setWhatsappNumber(item.user.whatsappNumber);
         }
-
+        
         setInitialLoading(false);
       } catch (err) {
         console.error('Error fetching item:', err);
@@ -121,7 +117,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
         setInitialLoading(false);
       }
     };
-
+    
     if (user) {
       fetchItem();
     } else {
@@ -134,15 +130,15 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-
+      
       // Limit to 5 images total (existing + new)
       if (existingImages.length - imagesToDelete.length + files.length + selectedFiles.length > 5) {
         setError('You can upload a maximum of 5 images');
         return;
       }
-
+      
       setFiles([...files, ...selectedFiles]);
-
+      
       // Create preview URLs
       const newPreviewUrls = selectedFiles.map(file => URL.createObjectURL(file));
       setPreviewUrls([...previewUrls, ...newPreviewUrls]);
@@ -153,17 +149,17 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   const handleRemoveNewImage = (index: number) => {
     const newFiles = [...files];
     const newPreviewUrls = [...previewUrls];
-
+    
     // Revoke the object URL to avoid memory leaks
     URL.revokeObjectURL(newPreviewUrls[index]);
-
+    
     newFiles.splice(index, 1);
     newPreviewUrls.splice(index, 1);
-
+    
     setFiles(newFiles);
     setPreviewUrls(newPreviewUrls);
   };
-
+  
   // Toggle existing image for deletion
   const handleToggleExistingImage = (imageUrl: string) => {
     if (imagesToDelete.includes(imageUrl)) {
@@ -174,7 +170,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
       setImagesToDelete([...imagesToDelete, imageUrl]);
     }
   };
-
+  
   // Handle next step
   const handleNext = () => {
     // Validate current step
@@ -189,11 +185,11 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
         return;
       }
     }
-
+    
     setError(null);
     setActiveStep((prevStep) => prevStep + 1);
   };
-
+  
   // Handle back step
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -202,39 +198,39 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!user) {
       setError('You must be logged in to update a listing');
       return;
     }
-
+    
     if (!originalItem) {
       setError('Original listing data not found');
       return;
     }
-
+    
     // Validate form
     if (!title || !description || !price || !category || !listingType) {
       setError('Please fill in all required fields');
       return;
     }
-
+    
     // Validate price is a number
     const numericPrice = parseFloat(price);
     if (isNaN(numericPrice)) {
       setError('Price must be a valid number');
       return;
     }
-
+    
     setLoading(true);
     setError(null);
-
+    
     try {
       console.log('Starting listing update process...');
-
+      
       // Prepare the updated images array
       let updatedImages = [...existingImages.filter(url => !imagesToDelete.includes(url))];
-
+      
       // Upload new images
       if (files.length > 0) {
         console.log(`Uploading ${files.length} new images...`);
@@ -248,10 +244,10 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
           }
         }
       }
-
+      
       // Create the update object
       const updates: Partial<Item> = {};
-
+      
       // Only include fields that have changed
       if (title !== originalItem.title) updates.title = title;
       if (description !== originalItem.description) updates.description = description;
@@ -259,22 +255,22 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
       if (category !== originalItem.category) updates.category = category as ItemCategory;
       if (listingType !== originalItem.listingType) updates.listingType = listingType as ListingType;
       if (condition !== originalItem.condition) updates.condition = condition;
-
+      
       // Always update images if there are changes
       if (JSON.stringify(updatedImages) !== JSON.stringify(originalItem.images)) {
         updates.images = updatedImages;
       }
-
+      
       console.log('Updating item with data:', JSON.stringify(updates, null, 2));
-
+      
       // Only update if there are changes
       if (Object.keys(updates).length > 0) {
         try {
           const updatedItem = await updateItem(id, updates);
           console.log('Item updated successfully:', updatedItem);
-
+          
           setSuccess(true);
-
+          
           // Redirect to the item page after a short delay
           setTimeout(() => {
             router.push(`/items/${updatedItem.id}`);
@@ -286,7 +282,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
       } else {
         console.log('No changes detected, skipping update');
         setSuccess(true);
-
+        
         // Redirect to the item page after a short delay
         setTimeout(() => {
           router.push(`/items/${id}`);
@@ -299,7 +295,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
       setLoading(false);
     }
   };
-
+  
   // Render the appropriate step content
   const renderStepContent = () => {
     switch (activeStep) {
@@ -319,7 +315,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                   placeholder="What are you selling/renting?"
                 />
               </Grid>
-
+              
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -338,7 +334,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
             </Grid>
           </Box>
         );
-
+        
       case 1: // Details
         return (
           <Box sx={{ mt: 3 }}>
@@ -358,7 +354,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                   </Select>
                 </FormControl>
               </Grid>
-
+              
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -374,7 +370,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                   disabled={loading || success}
                 />
               </Grid>
-
+              
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required>
                   <InputLabel>Category</InputLabel>
@@ -392,7 +388,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                   </Select>
                 </FormControl>
               </Grid>
-
+              
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -404,7 +400,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                   disabled={loading || success}
                 />
               </Grid>
-
+              
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -427,7 +423,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
             </Grid>
           </Box>
         );
-
+        
       case 2: // Images
         return (
           <Box sx={{ mt: 3 }}>
@@ -437,7 +433,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
             <Typography variant="body2" color="text.secondary" gutterBottom>
               Good quality images increase your chances of selling quickly
             </Typography>
-
+            
             {/* Existing Images */}
             {existingImages.length > 0 && (
               <>
@@ -492,7 +488,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                 </Box>
               </>
             )}
-
+            
             {/* New Images */}
             {previewUrls.length > 0 && (
               <>
@@ -550,7 +546,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                 </Box>
               </>
             )}
-
+            
             {/* Add Image Button */}
             {existingImages.length - imagesToDelete.length + previewUrls.length < 5 && (
               <Box sx={{ mt: 2 }}>
@@ -584,13 +580,13 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                 </Button>
               </Box>
             )}
-
+            
             {imagesToDelete.length > 0 && (
               <Alert severity="warning" sx={{ mt: 3 }}>
                 {imagesToDelete.length} image(s) marked for deletion. These will be removed when you save changes.
               </Alert>
             )}
-
+            
             {existingImages.length === 0 && previewUrls.length === 0 && (
               <Alert severity="info" sx={{ mt: 2 }}>
                 You can add up to 5 images of your item
@@ -598,52 +594,52 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
             )}
           </Box>
         );
-
+        
       case 3: // Review
         return (
           <Box sx={{ mt: 3 }}>
             <Typography variant="h6" gutterBottom>
               Review Your Changes
             </Typography>
-
+            
             <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Typography variant="h5">{title}</Typography>
-                  <Chip
-                    label={listingType}
+                  <Chip 
+                    label={listingType} 
                     color={listingType === ListingType.SELL ? 'primary' : listingType === ListingType.RENT ? 'secondary' : 'default'}
                     size="small"
                     sx={{ mt: 1, mr: 1 }}
                   />
-                  <Chip
-                    label={category}
+                  <Chip 
+                    label={category} 
                     variant="outlined"
                     size="small"
                     sx={{ mt: 1 }}
                   />
                 </Grid>
-
+                
                 <Grid item xs={12}>
                   <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
                     ₹{price}
                   </Typography>
                 </Grid>
-
+                
                 <Grid item xs={12}>
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
                     {description}
                   </Typography>
                 </Grid>
-
+                
                 {condition && (
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2">Condition:</Typography>
                     <Typography variant="body2">{condition}</Typography>
                   </Grid>
                 )}
-
+                
                 {whatsappNumber && (
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2">Contact:</Typography>
@@ -653,7 +649,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                     </Typography>
                   </Grid>
                 )}
-
+                
                 {/* Display remaining images (not marked for deletion) */}
                 {(existingImages.filter(url => !imagesToDelete.includes(url)).length > 0 || previewUrls.length > 0) && (
                   <Grid item xs={12}>
@@ -678,7 +674,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                             />
                           </Box>
                         ))}
-
+                      
                       {previewUrls.map((url, index) => (
                         <Box
                           key={`review-new-${index}`}
@@ -701,7 +697,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                     </Box>
                   </Grid>
                 )}
-
+                
                 {imagesToDelete.length > 0 && (
                   <Grid item xs={12}>
                     <Alert severity="warning" sx={{ mt: 2 }}>
@@ -713,7 +709,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
             </Paper>
           </Box>
         );
-
+        
       default:
         return null;
     }
@@ -742,7 +738,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
             Back to My Listings
           </Button>
         </Box>
-
+        
         <Paper elevation={3} sx={{ p: 4, my: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
             Edit Listing
@@ -759,7 +755,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
               Listing updated successfully! Redirecting...
             </Alert>
           )}
-
+          
           {/* Stepper */}
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             {steps.map((label) => (
@@ -768,11 +764,11 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
               </Step>
             ))}
           </Stepper>
-
+          
           {/* Step content */}
           <Box component="form" onSubmit={handleSubmit}>
             {renderStepContent()}
-
+            
             {/* Navigation buttons */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
               <Button
@@ -782,7 +778,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
               >
                 Back
               </Button>
-
+              
               {activeStep === steps.length - 1 ? (
                 <Button
                   type="submit"

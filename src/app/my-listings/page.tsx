@@ -1,10 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
-// Disable static generation for this page
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
 import {
   Container,
   Typography,
