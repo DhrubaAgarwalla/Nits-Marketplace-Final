@@ -19,9 +19,7 @@ const nextConfig: NextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
-    formats: ['image/webp'],
-    // Enable image optimization
-    unoptimized: false,
+    unoptimized: true,
   },
 };
 

@@ -6,8 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "optimize-images": "node scripts/optimize-images.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -18,8 +17,7 @@
     "@supabase/supabase-js": "^2.49.4",
     "next": "15.2.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "sharp": "^0.33.2"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

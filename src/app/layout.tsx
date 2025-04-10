@@ -19,8 +19,6 @@ export const metadata: Metadata = {
   description: "Buy, sell, and rent items within the NIT Silchar community",
 };
 
-import ClientDynamicProvider from "@/components/ClientDynamicProvider";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,9 +28,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeRegistry>
-          <ClientDynamicProvider>
+          <AuthProvider>
             {children}
-          </ClientDynamicProvider>
+          </AuthProvider>
         </ThemeRegistry>
       </body>
     </html>

@@ -35,10 +35,10 @@ export default function Home() {
     <MainLayout>
       {/* Hero Section */}
       <div className={styles.heroSection}>
-        {/* Background image - optimized for performance */}
+        {/* Background image */}
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
           <Image
-            src="/header3.webp"
+            src="/header3 (1).jpeg"
             alt="NIT Silchar Campus"
             fill
             style={{
@@ -48,10 +48,7 @@ export default function Home() {
               opacity: 1
             }}
             priority
-            quality={85}
-            sizes="100vw"
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQYH/8QAIhAAAgEDAwUBAAAAAAAAAAAAAQIDBAURAAYhBxITMUFR/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/ANJvO+LXtmgWWvqGaWQkRQRDLyEDJwPgAZJPAFRdN+pVv3TXVFJFRVFHVwRiR45WVg6k4BwQCCCQc/QRzqpbZt9JbKFKWkQhAScscsSeST9J1QrP/9k="
+            quality={100}
           />
         </div>
         {/* Overlay removed for better image visibility */}
