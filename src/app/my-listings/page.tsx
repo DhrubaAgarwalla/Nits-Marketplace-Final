@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -229,7 +229,19 @@ export default function MyListingsPage() {
             <Grid container spacing={3} sx={{ width: '100%', maxWidth: '100%' }}>
               {filteredItems.map((item) => (
                 <Grid item key={item.id} xs={12} sm={6} md={4} sx={{ maxWidth: '100%' }}>
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100%', width: '100%' }}>
+                  <Card sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%',
+                    width: '100%',
+                    // Set a fixed width to prevent expansion
+                    '& .MuiCardContent-root': {
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      padding: '16px',
+                    }
+                  }}>
                     {item.images && item.images.length > 0 ? (
                       <CardMedia
                         component="img"
@@ -281,9 +293,15 @@ export default function MyListingsPage() {
                         {item.listingType === ListingType.RENT && <span style={{ fontSize: '0.8rem' }}> /month</span>}
                       </Typography>
 
-                      <Box sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
+                      <Box sx={{
+                        width: '100%',
+                        overflow: 'hidden',
+                        // Set a fixed width to prevent expansion
+                        maxWidth: '240px'
+                      }}>
                         <Typography variant="body2" color="text.secondary" sx={{
                           mb: 1,
+                          height: '3em',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           display: '-webkit-box',
@@ -295,9 +313,15 @@ export default function MyListingsPage() {
                           width: '100%',
                           maxWidth: '100%'
                         }}>
-                          {item.description.length > 100
-                            ? `${item.description.substring(0, 100)}...`
-                            : item.description}
+                          {/* Limit to approximately 5-6 words per line */}
+                          {item.description.split(' ').slice(0, 20).map((word, index) => {
+                            // Add a line break after every 5th word
+                            if (index > 0 && index % 5 === 0) {
+                              return <React.Fragment key={index}><br />{word} </React.Fragment>;
+                            }
+                            return <React.Fragment key={index}>{word} </React.Fragment>;
+                          })}
+                          {item.description.split(' ').length > 20 && '...'}
                         </Typography>
                       </Box>
 
