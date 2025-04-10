@@ -68,7 +68,7 @@ export default function ItemCard({ item }: ItemCardProps) {
   };
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100%', width: '100%' }}>
       <CardActionArea component={Link} href={`/items/${id}`}>
         {images && images.length > 0 ? (
           <CardMedia
@@ -96,7 +96,7 @@ export default function ItemCard({ item }: ItemCardProps) {
              category === 'Tickets' ? '🎫' : '🛍️'}
           </Box>
         )}
-        <CardContent sx={{ flexGrow: 1 }}>
+        <CardContent sx={{ flexGrow: 1, width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
             <Typography variant="h6" component="h2" gutterBottom sx={{
               maxWidth: '70%',
@@ -122,19 +122,24 @@ export default function ItemCard({ item }: ItemCardProps) {
             {listingType === ListingType.RENT && <span style={{ fontSize: '0.8rem' }}> /month</span>}
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" sx={{
-            mb: 1,
-            height: '3em',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            wordBreak: 'break-word',
-            width: '100%'
-          }}>
-            {description}
-          </Typography>
+          <Box sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
+            <Typography variant="body2" color="text.secondary" sx={{
+              mb: 1,
+              height: '3em',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              wordBreak: 'break-word',
+              wordWrap: 'break-word',
+              hyphens: 'auto',
+              width: '100%',
+              maxWidth: '100%'
+            }}>
+              {description}
+            </Typography>
+          </Box>
 
           <Chip
             label={category}

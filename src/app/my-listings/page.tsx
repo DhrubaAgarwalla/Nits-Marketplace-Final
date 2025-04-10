@@ -226,10 +226,10 @@ export default function MyListingsPage() {
               </Button>
             </Box>
           ) : (
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ width: '100%', maxWidth: '100%' }}>
               {filteredItems.map((item) => (
-                <Grid item key={item.id} xs={12} sm={6} md={4}>
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Grid item key={item.id} xs={12} sm={6} md={4} sx={{ maxWidth: '100%' }}>
+                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100%', width: '100%' }}>
                     {item.images && item.images.length > 0 ? (
                       <CardMedia
                         component="img"
@@ -256,7 +256,7 @@ export default function MyListingsPage() {
                          item.category === 'Tickets' ? '🎫' : '🛍️'}
                       </Box>
                     )}
-                    <CardContent sx={{ flexGrow: 1 }}>
+                    <CardContent sx={{ flexGrow: 1, width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                         <Typography variant="h6" component="h2" sx={{
                           maxWidth: '70%',
@@ -281,20 +281,25 @@ export default function MyListingsPage() {
                         {item.listingType === ListingType.RENT && <span style={{ fontSize: '0.8rem' }}> /month</span>}
                       </Typography>
 
-                      <Typography variant="body2" color="text.secondary" sx={{
-                        mb: 1,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        wordBreak: 'break-word',
-                        width: '100%'
-                      }}>
-                        {item.description.length > 100
-                          ? `${item.description.substring(0, 100)}...`
-                          : item.description}
-                      </Typography>
+                      <Box sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                          mb: 1,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          wordBreak: 'break-word',
+                          wordWrap: 'break-word',
+                          hyphens: 'auto',
+                          width: '100%',
+                          maxWidth: '100%'
+                        }}>
+                          {item.description.length > 100
+                            ? `${item.description.substring(0, 100)}...`
+                            : item.description}
+                        </Typography>
+                      </Box>
 
                       <Typography variant="caption" color="text.secondary" display="block">
                         Posted: {new Date(item.createdAt).toLocaleDateString()}
