@@ -258,7 +258,15 @@ export default function MyListingsPage() {
                     )}
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                        <Typography variant="h6" component="h2" noWrap sx={{ maxWidth: '70%' }}>
+                        <Typography variant="h6" component="h2" sx={{
+                          maxWidth: '70%',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 1,
+                          WebkitBoxOrient: 'vertical',
+                          wordBreak: 'break-word'
+                        }}>
                           {item.title}
                         </Typography>
                         <Chip
@@ -273,7 +281,16 @@ export default function MyListingsPage() {
                         {item.listingType === ListingType.RENT && <span style={{ fontSize: '0.8rem' }}> /month</span>}
                       </Typography>
 
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{
+                        mb: 1,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        wordBreak: 'break-word',
+                        width: '100%'
+                      }}>
                         {item.description.length > 100
                           ? `${item.description.substring(0, 100)}...`
                           : item.description}

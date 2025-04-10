@@ -98,7 +98,15 @@ export default function ItemCard({ item }: ItemCardProps) {
         )}
         <CardContent sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-            <Typography variant="h6" component="h2" gutterBottom noWrap sx={{ maxWidth: '70%' }}>
+            <Typography variant="h6" component="h2" gutterBottom sx={{
+              maxWidth: '70%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: 'vertical',
+              wordBreak: 'break-word'
+            }}>
               {title}
             </Typography>
             <Chip
@@ -114,7 +122,17 @@ export default function ItemCard({ item }: ItemCardProps) {
             {listingType === ListingType.RENT && <span style={{ fontSize: '0.8rem' }}> /month</span>}
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1, height: '3em', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <Typography variant="body2" color="text.secondary" sx={{
+            mb: 1,
+            height: '3em',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            wordBreak: 'break-word',
+            width: '100%'
+          }}>
             {description}
           </Typography>
 
